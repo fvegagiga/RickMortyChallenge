@@ -45,7 +45,7 @@ final class CharactersListViewModel: ObservableObject {
         searchDebounceTask = Task {
             try? await Task.sleep(nanoseconds: 500_000_000)
             guard !Task.isCancelled else { return }
-            await performFetch(reset: true)
+            await performSearch()
         }
     }
 
@@ -67,6 +67,26 @@ final class CharactersListViewModel: ObservableObject {
             )
             allCharacters += result.items
             hasNextPage = result.hasNextPage
+
+            viewState = allCharacters.isEmpty ? .empty : .success(allCharacters)
+        } catch {
+            if allCharacters.isEmpty {
+                viewState = .failure(error)
+            }
+        }
+    }
+
+    private func performSearch() async {
+        currentPage = 1
+        let query = searchText.trimmingCharacters(in: .whitespaces)
+
+        do {
+            let result = try await getCharactersUseCase.execute(
+                page: currentPage,
+                name: query.isEmpty ? nil : query
+            )
+            hasNextPage = result.hasNextPage
+            allCharacters = result.items
 
             viewState = allCharacters.isEmpty ? .empty : .success(allCharacters)
         } catch {

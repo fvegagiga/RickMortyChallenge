@@ -55,10 +55,15 @@ struct CharactersListView: View {
                         .task {
                             await viewModel.loadMoreIfNeeded(currentItem: character)
                         }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                     }
                 }
                 .padding(.horizontal, DSSpacing.md)
                 .padding(.vertical, DSSpacing.sm)
+                .animation(.spring(response: 0.45, dampingFraction: 0.8), value: characters.map(\.id))
 
                 if viewModel.isLoadingMore {
                     ProgressView()
