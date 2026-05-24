@@ -34,6 +34,9 @@ final class NetworkService: NetworkServiceProtocol {
             break
         case 404:
             throw NetworkError.notFound
+        case 429:
+            let retryAfter = http.value(forHTTPHeaderField: "Retry-After").flatMap(TimeInterval.init)
+            throw NetworkError.rateLimited(retryAfter: retryAfter)
         case 500...599:
             throw NetworkError.serverError(statusCode: http.statusCode)
         default:

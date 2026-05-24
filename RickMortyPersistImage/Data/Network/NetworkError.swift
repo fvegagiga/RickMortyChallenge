@@ -6,6 +6,8 @@ enum NetworkError: LocalizedError, Equatable {
     case decodingFailed(String)
     case notFound
     case serverError(statusCode: Int)
+    /// HTTP 429. `retryAfter` is the server-suggested wait in seconds (from the Retry-After header).
+    case rateLimited(retryAfter: TimeInterval?)
     case noInternetConnection
     case requestCancelled
     case unknown(String)
@@ -22,6 +24,11 @@ enum NetworkError: LocalizedError, Equatable {
             return "The requested resource was not found."
         case .serverError(let code):
             return "Server error (HTTP \(code)). Please try again later."
+        case .rateLimited(let after):
+            if let after {
+                return "Too many requests. Retrying in \(Int(after))s…"
+            }
+            return "Too many requests. Retrying shortly…"
         case .noInternetConnection:
             return "No internet connection. Check your network settings."
         case .requestCancelled:

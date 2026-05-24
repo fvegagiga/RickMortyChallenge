@@ -22,19 +22,22 @@ final class DIContainer: ObservableObject {
         networkService: NetworkServiceProtocol = NetworkService(),
         imageCacheManager: ImageCacheManagerProtocol = ImageCacheManager()
     ) {
-        self.networkService = networkService
+        // Wrap with retry logic so all repositories benefit automatically.
+        // Tests can inject MockNetworkService directly (no retries) or wrap it too.
+        let resilient = RetryingNetworkService(wrapped: networkService)
+        self.networkService = resilient
         self.imageCacheManager = imageCacheManager
 
         self.characterRepository = CharacterRepositoryImpl(
-            networkService: networkService,
+            networkService: resilient,
             mapper: CharacterMapper()
         )
         self.locationRepository = LocationRepositoryImpl(
-            networkService: networkService,
+            networkService: resilient,
             mapper: LocationMapper()
         )
         self.episodeRepository = EpisodeRepositoryImpl(
-            networkService: networkService,
+            networkService: resilient,
             mapper: EpisodeMapper()
         )
     }
