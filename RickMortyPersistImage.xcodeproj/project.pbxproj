@@ -27,6 +27,7 @@
 		C6BE92002FC34CD80077BC27 /* RickMortyPersistImage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RickMortyPersistImage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6BE920D2FC34CDA0077BC27 /* RickMortyPersistImageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyPersistImageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6BE92172FC34CDA0077BC27 /* RickMortyPersistImageUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyPersistImageUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6C245802FC4BF8E004425C1 /* RickMortyPersistImageTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RickMortyPersistImageTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +76,7 @@
 		C6BE91F72FC34CD80077BC27 = {
 			isa = PBXGroup;
 			children = (
+				C6C245802FC4BF8E004425C1 /* RickMortyPersistImageTests.xctestplan */,
 				C6BE92022FC34CD80077BC27 /* RickMortyPersistImage */,
 				C6BE92102FC34CDA0077BC27 /* RickMortyPersistImageTests */,
 				C6BE921A2FC34CDA0077BC27 /* RickMortyPersistImageUITests */,
