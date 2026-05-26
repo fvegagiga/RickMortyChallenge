@@ -1,6 +1,7 @@
 import XCTest
 @testable import RickMortyPersistImage
 
+@MainActor
 final class GetCharactersUseCaseTests: XCTestCase {
     var sut: GetCharactersUseCase!
     var mockRepository: MockCharacterRepository!

@@ -1,6 +1,7 @@
 import XCTest
 @testable import RickMortyPersistImage
 
+@MainActor
 final class CharacterRepositoryTests: XCTestCase {
     var sut: CharacterRepositoryImpl!
     var mockNetworkService: MockNetworkService!

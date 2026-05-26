@@ -1,6 +1,7 @@
 import XCTest
 @testable import RickMortyPersistImage
 
+@MainActor
 final class RetryingNetworkServiceTests: XCTestCase {
     var mockInner: MockNetworkService!
 

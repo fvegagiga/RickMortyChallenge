@@ -1,6 +1,7 @@
 import XCTest
 @testable import RickMortyPersistImage
 
+@MainActor
 final class GetLocationsUseCaseTests: XCTestCase {
     var sut: GetLocationsUseCase!
     var mockRepository: MockLocationRepository!
