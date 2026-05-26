@@ -1,0 +1,757 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" version="21.0.0">
+  <diagram id="rick-morty-arch" name="RickMorty – Clean Architecture">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1350" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- LAYER BACKGROUNDS                                      -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <mxCell id="bg_core" value="&lt;b&gt;● Core&lt;/b&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=13;fontColor=#4D1A7F;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;arcSize=2;"
+          vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1860" height="190" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="bg_pres" value="&lt;b&gt;● Presentation&lt;/b&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=13;fontColor=#2B6B2B;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;arcSize=2;"
+          vertex="1" parent="1">
+          <mxGeometry x="20" y="220" width="960" height="580" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="bg_data" value="&lt;b&gt;● Data&lt;/b&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=13;fontColor=#1A3D7F;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;arcSize=2;"
+          vertex="1" parent="1">
+          <mxGeometry x="990" y="220" width="890" height="580" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="bg_domain" value="&lt;b&gt;● Domain&lt;/b&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=13;fontColor=#7F4A00;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;arcSize=2;"
+          vertex="1" parent="1">
+          <mxGeometry x="20" y="810" width="1860" height="510" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- CORE NODES                                             -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <mxCell id="app_entry" value="RickMortyPersistImageApp&#xa;&lt;i&gt;@main  (@StateObject)&lt;/i&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9673A6;strokeColor=#7A5EA6;fontColor=#ffffff;fontStyle=1;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="75" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="di_container" value="DIContainer&#xa;&lt;i&gt;@EnvironmentObject&lt;/i&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9673A6;strokeColor=#7A5EA6;fontColor=#ffffff;fontStyle=1;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="260" y="75" width="190" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="app_router" value="AppRouter&#xa;&lt;i&gt;@MainActor ObservableObject&lt;/i&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="470" y="75" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="app_route" value="CharacterRoute&#xa;LocationRoute / EpisodeRoute"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="690" y="75" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="img_cache_proto" value="«protocol»&#xa;ImageCacheManagerProtocol"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=3;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="912" y="45" width="215" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="img_cache" value="ImageCacheManager&#xa;(NSCache + FileManager disk)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="912" y="120" width="215" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="view_state" value="ViewState&lt;T&gt;&#xa;idle / loading / success / empty / failure"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1155" y="75" width="270" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- PRESENTATION NODES                                     -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <mxCell id="content_view" value="ContentView&#xa;(TabView – root navigation)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="255" width="185" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="chars_list_view" value="CharactersListView"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="318" width="165" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="chars_list_vm" value="CharactersListViewModel"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="230" y="318" width="190" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="char_detail_view" value="CharacterDetailView"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="378" width="165" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="char_detail_vm" value="CharacterDetailViewModel"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="230" y="378" width="190" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="locs_list_view" value="LocationsListView"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="438" width="165" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="locs_list_vm" value="LocationsListViewModel"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="230" y="438" width="190" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="eps_list_view" value="EpisodesListView"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="498" width="165" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="eps_list_vm" value="EpisodesListViewModel"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="230" y="498" width="190" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="async_img" value="AsyncCachedImage&#xa;(reusable component)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="572" width="165" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="shared_views" value="ErrorView / RetryView&#xa;EmptyStateView"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="230" y="572" width="190" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- DATA NODES                                             -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <mxCell id="net_svc_proto" value="«protocol»&#xa;NetworkServiceProtocol"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=3;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1010" y="260" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="net_svc" value="NetworkService&#xa;(URLSession + JSONDecoder)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1010" y="330" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="retry_svc" value="RetryingNetworkService&#xa;(Decorator · backoff + jitter)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1010" y="400" width="200" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api_endpoint" value="APIEndpoint&#xa;(characters / locations / episodes)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1010" y="476" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="net_error" value="NetworkError&#xa;(rateLimited / notFound / serverError / …)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1245" y="260" width="230" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="char_repo_impl" value="CharacterRepositoryImpl"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1245" y="330" width="205" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="loc_repo_impl" value="LocationRepositoryImpl"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1245" y="390" width="205" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ep_repo_impl" value="EpisodeRepositoryImpl"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1245" y="450" width="205" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="mappers" value="CharacterMapper&#xa;LocationMapper / EpisodeMapper"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1498" y="330" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dtos" value="CharacterDTO / LocationDTO&#xa;EpisodeDTO / PaginatedResponseDTO"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1498" y="400" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- DOMAIN NODES                                           -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <mxCell id="char_repo_proto" value="«protocol»&#xa;CharacterRepositoryProtocol"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontStyle=3;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="855" width="225" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="loc_repo_proto" value="«protocol»&#xa;LocationRepositoryProtocol"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontStyle=3;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="285" y="855" width="225" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ep_repo_proto" value="«protocol»&#xa;EpisodeRepositoryProtocol"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontStyle=3;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="530" y="855" width="225" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="get_chars_uc" value="GetCharactersUseCase"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="960" width="200" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="get_char_detail_uc" value="GetCharacterDetailUseCase"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="260" y="960" width="215" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="get_locs_uc" value="GetLocationsUseCase"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="495" y="960" width="200" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="get_eps_uc" value="GetEpisodesUseCase"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="715" y="960" width="200" height="45" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="char_entity" value="CharacterEntity&#xa;CharacterStatus / CharacterGender"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="970" y="855" width="225" height="55" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="loc_entity" value="LocationEntity"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1215" y="855" width="185" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ep_entity" value="EpisodeEntity"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1420" y="855" width="185" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="paged_result" value="PagedResult&lt;T: Sendable&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1625" y="855" width="185" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- LEGEND  (4 arrow types only)                          -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <mxCell id="leg_bg" value="Legend"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=12;verticalAlign=top;spacingTop=5;"
+          vertex="1" parent="1">
+          <mxGeometry x="1910" y="20" width="270" height="190" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="l1a" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1926" y="62" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l1b" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1990" y="62" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l1e" value="" style="endArrow=block;endFill=0;dashed=0;strokeColor=#333333;"
+          edge="1" source="l1a" target="l1b" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l1t" value="inherits from / is"
+          style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1998" y="53" width="170" height="18" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="l2a" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1926" y="98" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l2b" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1990" y="98" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l2e" value="" style="dashed=1;endArrow=block;endFill=0;strokeColor=#333333;"
+          edge="1" source="l2a" target="l2b" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l2t" value="conforms to / implements"
+          style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1998" y="89" width="170" height="18" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="l3a" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1926" y="134" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l3b" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1990" y="134" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l3e" value="" style="endArrow=block;endFill=1;dashed=0;strokeColor=#333333;"
+          edge="1" source="l3a" target="l3b" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l3t" value="depends on / has a (strong)"
+          style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1998" y="125" width="170" height="18" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="l4a" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1926" y="170" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l4b" value="" style="point;" vertex="1" parent="1">
+          <mxGeometry x="1990" y="170" width="1" height="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l4e" value="" style="dashed=1;endArrow=block;endFill=1;strokeColor=#333333;"
+          edge="1" source="l4a" target="l4b" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="l4t" value="depends on (weak)"
+          style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1998" y="161" width="170" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — CORE (purple)                                  -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- app_entry —has a→ DIContainer -->
+        <mxCell id="e_entry_di" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="app_entry" target="di_container" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- app_entry —has a→ AppRouter -->
+        <mxCell id="e_entry_router" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="app_entry" target="app_router" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- AppRouter —has a→ Route enums -->
+        <mxCell id="e_router_route" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="app_router" target="app_route" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- DIContainer —has a→ ImageCacheManager -->
+        <mxCell id="e_di_imgcache" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="img_cache" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ImageCacheManager - - conforms to - -> ImageCacheManagerProtocol -->
+        <mxCell id="e_imgcache_proto" value=""
+          style="dashed=1;endArrow=block;endFill=0;strokeColor=#7A5EA6;"
+          edge="1" source="img_cache" target="img_cache_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — CORE → DATA (purple)                           -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- DIContainer —has a→ RetryingNetworkService -->
+        <mxCell id="e_di_retry" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="retry_svc" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- DIContainer —has a→ Repository impls -->
+        <mxCell id="e_di_charrepo" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="char_repo_impl" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_di_locrepo" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="loc_repo_impl" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_di_eprepo" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="ep_repo_impl" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — CORE → PRESENTATION (purple, factory)         -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- DIContainer - - depends on (weak) - -> ViewModels (factory) -->
+        <mxCell id="e_di_charsvm" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="chars_list_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_di_chardetvm" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="char_detail_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_di_locsvm" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="locs_list_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_di_epsvm" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#7A5EA6;"
+          edge="1" source="di_container" target="eps_list_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — PRESENTATION (green)                          -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- ContentView - - depends on (weak) - -> AppRouter -->
+        <mxCell id="e_cv_router" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#82B366;"
+          edge="1" source="content_view" target="app_router" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ContentView —has a→ List Views -->
+        <mxCell id="e_cv_charsv" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="content_view" target="chars_list_view" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cv_locsv" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="content_view" target="locs_list_view" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_cv_epsv" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="content_view" target="eps_list_view" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Views —has a→ ViewModels (@StateObject) -->
+        <mxCell id="e_v_charsvm" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="chars_list_view" target="chars_list_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_v_chardetvm" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="char_detail_view" target="char_detail_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_v_locsvm" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="locs_list_view" target="locs_list_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_v_epsvm" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="eps_list_view" target="eps_list_vm" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Views —has a→ AsyncCachedImage -->
+        <mxCell id="e_charsv_img" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="chars_list_view" target="async_img" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_chardetv_img" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="char_detail_view" target="async_img" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- AsyncCachedImage - - depends on (weak) - -> ImageCacheManagerProtocol -->
+        <mxCell id="e_asyncimg_proto" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#82B366;"
+          edge="1" source="async_img" target="img_cache_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ViewModels —has a→ ViewState (concrete type dep) -->
+        <mxCell id="e_charsvm_vs" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="chars_list_vm" target="view_state" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_chardetvm_vs" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="char_detail_vm" target="view_state" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_locsvm_vs" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="locs_list_vm" target="view_state" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_epsvm_vs" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="eps_list_vm" target="view_state" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — PRESENTATION → DOMAIN (green)                 -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- ViewModels —has a→ UseCases -->
+        <mxCell id="e_vm_gcharuc" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="chars_list_vm" target="get_chars_uc" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_vm_gchardetuc" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="char_detail_vm" target="get_char_detail_uc" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_vm_glocsuc" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="locs_list_vm" target="get_locs_uc" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_vm_gepsuc" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#82B366;"
+          edge="1" source="eps_list_vm" target="get_eps_uc" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — DATA (blue)                                    -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- NetworkService - - conforms to - -> NetworkServiceProtocol -->
+        <mxCell id="e_netsvc_proto" value=""
+          style="dashed=1;endArrow=block;endFill=0;strokeColor=#6C8EBF;"
+          edge="1" source="net_svc" target="net_svc_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- RetryingNetworkService - - conforms to - -> NetworkServiceProtocol -->
+        <mxCell id="e_retry_proto" value=""
+          style="dashed=1;endArrow=block;endFill=0;strokeColor=#6C8EBF;"
+          edge="1" source="retry_svc" target="net_svc_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- RetryingNetworkService —has a→ NetworkService (wraps) -->
+        <mxCell id="e_retry_netsvc" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="retry_svc" target="net_svc" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- NetworkService —has a→ APIEndpoint -->
+        <mxCell id="e_netsvc_endpoint" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="net_svc" target="api_endpoint" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- NetworkService —has a→ NetworkError -->
+        <mxCell id="e_netsvc_err" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="net_svc" target="net_error" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- RepositoryImpls - - depends on (weak) - -> NetworkServiceProtocol -->
+        <mxCell id="e_charrimp_netsvc" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#6C8EBF;"
+          edge="1" source="char_repo_impl" target="net_svc_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_locrimp_netsvc" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#6C8EBF;"
+          edge="1" source="loc_repo_impl" target="net_svc_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_eprimp_netsvc" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#6C8EBF;"
+          edge="1" source="ep_repo_impl" target="net_svc_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- RepositoryImpls —has a→ Mappers -->
+        <mxCell id="e_charrimp_mapper" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="char_repo_impl" target="mappers" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_locrimp_mapper" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="loc_repo_impl" target="mappers" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_eprimp_mapper" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="ep_repo_impl" target="mappers" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Mappers —has a→ DTOs -->
+        <mxCell id="e_mappers_dtos" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="mappers" target="dtos" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — DATA → DOMAIN (blue)                          -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- RepositoryImpls - - conforms to - -> Repository Protocols -->
+        <mxCell id="e_charrimp_proto" value=""
+          style="dashed=1;endArrow=block;endFill=0;strokeColor=#6C8EBF;"
+          edge="1" source="char_repo_impl" target="char_repo_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_locrimp_proto" value=""
+          style="dashed=1;endArrow=block;endFill=0;strokeColor=#6C8EBF;"
+          edge="1" source="loc_repo_impl" target="loc_repo_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_eprimp_proto" value=""
+          style="dashed=1;endArrow=block;endFill=0;strokeColor=#6C8EBF;"
+          edge="1" source="ep_repo_impl" target="ep_repo_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Mappers —has a→ Entities (produces) -->
+        <mxCell id="e_mappers_charent" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="mappers" target="char_entity" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_mappers_locent" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="mappers" target="loc_entity" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_mappers_epent" value=""
+          style="endArrow=block;endFill=1;dashed=0;strokeColor=#6C8EBF;"
+          edge="1" source="mappers" target="ep_entity" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- EDGES — DOMAIN (orange)                               -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- UseCases - - depends on (weak) - -> Repository Protocols -->
+        <mxCell id="e_gcharuc_charproto" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_chars_uc" target="char_repo_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_gchardetuc_charproto" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_char_detail_uc" target="char_repo_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_glocsuc_locproto" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_locs_uc" target="loc_repo_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_gepsuc_epproto" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_eps_uc" target="ep_repo_proto" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- UseCases - - depends on (weak) - -> Entities -->
+        <mxCell id="e_gcharuc_charent" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_chars_uc" target="char_entity" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_gchardetuc_charent" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_char_detail_uc" target="char_entity" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_glocsuc_locent" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_locs_uc" target="loc_entity" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_gepsuc_epent" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_eps_uc" target="ep_entity" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- UseCases - - depends on (weak) - -> PagedResult -->
+        <mxCell id="e_gcharuc_paged" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_chars_uc" target="paged_result" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_glocsuc_paged" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_locs_uc" target="paged_result" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_gepsuc_paged" value=""
+          style="dashed=1;endArrow=block;endFill=1;strokeColor=#D6B656;"
+          edge="1" source="get_eps_uc" target="paged_result" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
