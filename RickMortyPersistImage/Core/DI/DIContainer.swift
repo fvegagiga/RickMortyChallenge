@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import Network
 
 /// Central dependency container. Created once at app startup and passed via @EnvironmentObject.
 /// Factories return new ViewModel instances so each screen owns its own state.

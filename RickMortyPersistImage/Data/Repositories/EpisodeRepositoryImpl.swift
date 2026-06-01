@@ -1,4 +1,5 @@
 import Foundation
+import Network
 
 final class EpisodeRepositoryImpl: EpisodeRepositoryProtocol {
     private let networkService: NetworkServiceProtocol
@@ -11,7 +12,7 @@ final class EpisodeRepositoryImpl: EpisodeRepositoryProtocol {
 
     func fetchEpisodes(page: Int) async throws -> PagedResult<EpisodeEntity> {
         let response: PaginatedResponseDTO<EpisodeDTO> = try await networkService.fetch(
-            .episodes(page: page)
+            APIEndpoint.episodes(page: page)
         )
         return PagedResult(
             items: mapper.map(response.results),

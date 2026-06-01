@@ -1,6 +1,7 @@
 import Foundation
+import Network
 
-enum APIEndpoint {
+enum APIEndpoint: Endpoint {
     private static let baseURL = "https://rickandmortyapi.com/api"
 
     case characters(page: Int, name: String? = nil)

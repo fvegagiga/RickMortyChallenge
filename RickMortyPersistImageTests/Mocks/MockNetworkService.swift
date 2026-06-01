@@ -1,5 +1,5 @@
 import Foundation
-@testable import RickMortyPersistImage
+import Network
 
 final class MockNetworkService: NetworkServiceProtocol {
     var result: Any?
@@ -7,10 +7,10 @@ final class MockNetworkService: NetworkServiceProtocol {
     /// Throw `errorToThrow` for the first N calls, then return `result`.
     /// Default `Int.max` = always throw (original behaviour).
     var failCount: Int = Int.max
-    private(set) var lastEndpoint: APIEndpoint?
+    private(set) var lastEndpoint: (any Endpoint)?
     private(set) var callCount = 0
 
-    func fetch<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
+    func fetch<T: Decodable>(_ endpoint: some Endpoint) async throws -> T {
         callCount += 1
         lastEndpoint = endpoint
 

@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CDBF907EBD8F430581712DF6 /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = 17C76E784527414C872F37EC /* Network */; };
+		F06364C94F7B4E4289269732 /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = 4368A0AF3DC44601AE6B2B34 /* Network */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		C6BE920E2FC34CDA0077BC27 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -53,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDBF907EBD8F430581712DF6 /* Network in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F06364C94F7B4E4289269732 /* Network in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +121,7 @@
 			);
 			name = RickMortyPersistImage;
 			packageProductDependencies = (
+				17C76E784527414C872F37EC /* Network */,
 			);
 			productName = RickMortyPersistImage;
 			productReference = C6BE92002FC34CD80077BC27 /* RickMortyPersistImage.app */;
@@ -137,6 +145,7 @@
 			);
 			name = RickMortyPersistImageTests;
 			packageProductDependencies = (
+				4368A0AF3DC44601AE6B2B34 /* Network */,
 			);
 			productName = RickMortyPersistImageTests;
 			productReference = C6BE920D2FC34CDA0077BC27 /* RickMortyPersistImageTests.xctest */;
@@ -588,6 +597,26 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		D1AC6E49D77D4F10A44C29A3 /* XCLocalSwiftPackageReference "Packages/Network" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Network;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		17C76E784527414C872F37EC /* Network */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1AC6E49D77D4F10A44C29A3 /* XCLocalSwiftPackageReference "Packages/Network" */;
+			productName = Network;
+		};
+		4368A0AF3DC44601AE6B2B34 /* Network */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1AC6E49D77D4F10A44C29A3 /* XCLocalSwiftPackageReference "Packages/Network" */;
+			productName = Network;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C6BE91F82FC34CD80077BC27 /* Project object */;
 }

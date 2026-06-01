@@ -1,4 +1,5 @@
 import Foundation
+import Network
 
 final class CharacterRepositoryImpl: CharacterRepositoryProtocol {
     private let networkService: NetworkServiceProtocol
@@ -11,7 +12,7 @@ final class CharacterRepositoryImpl: CharacterRepositoryProtocol {
 
     func fetchCharacters(page: Int, name: String?) async throws -> PagedResult<CharacterEntity> {
         let response: PaginatedResponseDTO<CharacterDTO> = try await networkService.fetch(
-            .characters(page: page, name: name)
+            APIEndpoint.characters(page: page, name: name)
         )
         return PagedResult(
             items: mapper.map(response.results),
@@ -21,7 +22,7 @@ final class CharacterRepositoryImpl: CharacterRepositoryProtocol {
     }
 
     func fetchCharacterDetail(id: Int) async throws -> CharacterEntity {
-        let dto: CharacterDTO = try await networkService.fetch(.characterDetail(id: id))
+        let dto: CharacterDTO = try await networkService.fetch(APIEndpoint.characterDetail(id: id))
         return mapper.map(dto)
     }
 }

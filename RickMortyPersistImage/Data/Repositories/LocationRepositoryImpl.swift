@@ -1,4 +1,5 @@
 import Foundation
+import Network
 
 final class LocationRepositoryImpl: LocationRepositoryProtocol {
     private let networkService: NetworkServiceProtocol
@@ -11,7 +12,7 @@ final class LocationRepositoryImpl: LocationRepositoryProtocol {
 
     func fetchLocations(page: Int) async throws -> PagedResult<LocationEntity> {
         let response: PaginatedResponseDTO<LocationDTO> = try await networkService.fetch(
-            .locations(page: page)
+            APIEndpoint.locations(page: page)
         )
         return PagedResult(
             items: mapper.map(response.results),
