@@ -346,6 +346,18 @@ DSSpacing.xl   // 32
 
 Typography lives in `Core/DesignSystem/DSTypography.swift`. Use the defined text styles for consistent hierarchy.
 
+### Design System in Widget Extensions
+
+Widget extensions run in a separate process and do not automatically inherit the main app's source files. To use design system tokens in a widget extension, add the relevant files to the widget target's `membershipExceptions` in `project.pbxproj`:
+
+```
+Core/DesignSystem/DSColors.swift,
+Core/DesignSystem/DSSpacing.swift,
+Core/DesignSystem/DSTypography.swift,
+```
+
+This is already configured for `CharacterWidgetExtension`. If a new widget extension is added, repeat this step for its target.
+
 ## Image Handling
 
 - **Always use `CachedAsyncImageView`** — never `AsyncImage` directly

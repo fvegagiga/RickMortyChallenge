@@ -1,10 +1,4 @@
-# Capability: Character Widget
-
-## Purpose
-
-Provides a WidgetKit home screen widget that displays the currently selected character from the shared App Group storage, with interactive previous/next navigation arrows to cycle through available characters. The widget supports systemSmall and systemMedium size families and persists the current character index across reloads.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Widget displays current character
 The system SHALL render a home screen widget showing the currently selected character's image, name, and status indicator, read from the shared App Group storage. All typography and color tokens SHALL come from the project's design system (`DSTypography`, `DSColors`, `DSSpacing`).
@@ -23,25 +17,6 @@ The system SHALL render a home screen widget showing the currently selected char
 
 ---
 
-### Requirement: Widget supports previous and next navigation
-The system SHALL provide interactive previous (←) and next (→) navigation buttons that cycle through the available characters in the shared snapshot.
-
-#### Scenario: User taps next arrow
-- **WHEN** the user taps the next (→) button on the widget
-- **THEN** the current index increments by 1, wrapping to 0 when it exceeds the last character
-- **AND** the widget reloads and displays the new character
-
-#### Scenario: User taps previous arrow
-- **WHEN** the user taps the previous (←) button on the widget
-- **THEN** the current index decrements by 1, wrapping to the last character when it goes below 0
-- **AND** the widget reloads and displays the new character
-
-#### Scenario: Navigation with single character in snapshot
-- **WHEN** the snapshot contains exactly one character and the user taps next or previous
-- **THEN** the widget stays on the same character (no visible change)
-
----
-
 ### Requirement: Widget supports systemSmall and systemMedium families
 The system SHALL render correctly in both `.systemSmall` and `.systemMedium` widget sizes using design system spacing and color tokens. Content margins SHALL be disabled so the image fills the widget edge to edge with no system-imposed white borders.
 
@@ -52,16 +27,3 @@ The system SHALL render correctly in both `.systemSmall` and `.systemMedium` wid
 #### Scenario: systemMedium layout
 - **WHEN** the widget is displayed in `.systemMedium`
 - **THEN** the character image fills the left side at its natural 1:1 aspect ratio (height = widget height), the gradient overlay and name/status dot/navigation bar are overlaid at the bottom of the image area, and the right side remains empty (shows the widget background)
-
----
-
-### Requirement: Widget navigation state persists between renders
-The system SHALL persist the current character index in the shared App Group so that navigation state survives widget reloads and device restarts.
-
-#### Scenario: Widget reloads after timeline refresh
-- **WHEN** WidgetKit reloads the widget timeline
-- **THEN** the widget displays the same character that was shown before the reload
-
-#### Scenario: App is relaunched after widget navigation
-- **WHEN** the user opens the main app after navigating via the widget
-- **THEN** the app is unaffected by the widget's current index (app state is independent)

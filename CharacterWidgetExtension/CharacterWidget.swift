@@ -11,5 +11,6 @@ struct CharacterWidget: Widget {
         .configurationDisplayName("Rick & Morty Character")
         .description("Navigate through Rick & Morty characters.")
         .supportedFamilies([.systemSmall, .systemMedium])
+        .contentMarginsDisabled()
     }
 }

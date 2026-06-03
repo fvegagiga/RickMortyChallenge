@@ -74,6 +74,9 @@
 		C62FE8A62FD061EF0007D433 /* Exceptions for "RickMortyPersistImage" folder in "CharacterWidgetExtensionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Core/DesignSystem/DSColors.swift,
+				Core/DesignSystem/DSSpacing.swift,
+				Core/DesignSystem/DSTypography.swift,
 				Core/Storage/AppGroupStore.swift,
 				Core/Storage/CharacterWidgetData.swift,
 			);

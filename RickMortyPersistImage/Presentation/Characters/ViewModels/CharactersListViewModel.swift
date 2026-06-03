@@ -85,7 +85,7 @@ final class CharactersListViewModel: ObservableObject {
     private func writeWidgetSnapshot() {
         guard let store = appGroupStore else { return }
         let snapshot = Array(allCharacters.shuffled().prefix(20)).map {
-            CharacterWidgetData(id: $0.id, name: $0.name, imageFileName: "\($0.id).jpg", imageURL: $0.imageURL)
+            CharacterWidgetData(id: $0.id, name: $0.name, imageFileName: "\($0.id).jpg", imageURL: $0.imageURL, status: $0.status.rawValue)
         }
         store.writeSnapshot(snapshot)
         Task.detached(priority: .background) {

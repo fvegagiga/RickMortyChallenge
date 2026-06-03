@@ -80,6 +80,17 @@ final class CharactersListViewModelWidgetTests: XCTestCase {
         XCTAssertEqual(mockStore.writeSnapshotCallCount, 2)
     }
 
+    func testLoadInitial_onSuccess_snapshotIncludesCharacterStatus() async {
+        let characters = [MockDataFactory.makeCharacterEntity(id: 1, name: "Rick", status: .alive)]
+        mockRepository.fetchCharactersResult = .success(
+            MockDataFactory.makePagedResult(items: characters)
+        )
+
+        await sut.loadInitial()
+
+        XCTAssertEqual(mockStore.writtenSnapshot?.first?.status, CharacterStatus.alive.rawValue)
+    }
+
     func testLoadInitial_withNilStore_doesNotCrash() async {
         let sutWithoutStore = CharactersListViewModel(
             getCharactersUseCase: GetCharactersUseCase(repository: mockRepository),

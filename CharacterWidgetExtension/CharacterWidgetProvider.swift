@@ -12,11 +12,21 @@ struct CharacterWidgetProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (CharacterWidgetEntry) -> Void) {
-        completion(CharacterWidgetEntry(date: .now, character: store.currentCharacter()))
+        completion(CharacterWidgetEntry(
+            date: .now,
+            character: store.currentCharacter(),
+            currentIndex: store.currentIndex(),
+            totalCount: store.totalCount()
+        ))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<CharacterWidgetEntry>) -> Void) {
-        let entry = CharacterWidgetEntry(date: .now, character: store.currentCharacter())
+        let entry = CharacterWidgetEntry(
+            date: .now,
+            character: store.currentCharacter(),
+            currentIndex: store.currentIndex(),
+            totalCount: store.totalCount()
+        )
         let refresh = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
         let timeline = Timeline(entries: [entry], policy: .after(refresh))
         completion(timeline)

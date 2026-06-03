@@ -87,6 +87,23 @@ final class AppGroupStoreTests: XCTestCase {
         XCTAssertNil(store.imageURL(for: 1))
     }
 
+    // MARK: - CharacterWidgetData backward compatibility
+
+    func testCharacterWidgetData_decodesLegacyPayloadWithoutStatus_defaultsToEmptyString() throws {
+        let legacyJSON = """
+        [{"id":1,"name":"Rick","imageFileName":"1.jpg"}]
+        """.data(using: .utf8)!
+        let characters = try JSONDecoder().decode([CharacterWidgetData].self, from: legacyJSON)
+        XCTAssertEqual(characters[0].status, "")
+    }
+
+    func testCharacterWidgetData_encodesAndDecodesStatusRoundTrip() throws {
+        let original = CharacterWidgetData(id: 1, name: "Rick", imageFileName: "1.jpg", imageURL: nil, status: "Alive")
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(CharacterWidgetData.self, from: data)
+        XCTAssertEqual(decoded.status, "Alive")
+    }
+
     // MARK: - Helpers
 
     private func makeCharacters(count: Int) -> [CharacterWidgetData] {
