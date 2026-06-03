@@ -1,0 +1,15 @@
+{
+  "originHash" : "a345160bee8dbea8b50b5a89078dacace4ecfa4a4a12433f6bd678670423d6f3",
+  "pins" : [
+    {
+      "identity" : "network",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/fvegagiga/Network",
+      "state" : {
+        "revision" : "f00acf3317d0506f049924f7e61b874e56469469",
+        "version" : "1.0.2"
+      }
+    }
+  ],
+  "version" : 3
+}

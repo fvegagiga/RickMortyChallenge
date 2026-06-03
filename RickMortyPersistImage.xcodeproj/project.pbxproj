@@ -206,6 +206,9 @@
 			);
 			mainGroup = C6BE91F72FC34CD80077BC27;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C64CE9892FCDE846007D31D1 /* XCRemoteSwiftPackageReference "Network" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C6BE92012FC34CD80077BC27 /* Products */;
 			projectDirPath = "";
@@ -604,6 +607,17 @@
 			relativePath = Packages/Network;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C64CE9892FCDE846007D31D1 /* XCRemoteSwiftPackageReference "Network" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fvegagiga/Network";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		17C76E784527414C872F37EC /* Network */ = {
