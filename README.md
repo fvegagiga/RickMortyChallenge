@@ -266,6 +266,36 @@ No third-party dependencies. No SPM packages required.
 
 ---
 
+## Home Screen Widget
+
+The app includes a **Character Navigation Widget** (iOS 17+) that displays Rick & Morty characters directly on the home screen with ← → navigation arrows.
+
+### Adding the Widget
+
+1. Long-press the home screen and tap the **+** button
+2. Search for "Rick & Morty Character"
+3. Choose **Small** or **Medium** size
+4. Tap **Add Widget**
+
+### How It Works
+
+- The widget is populated automatically the first time you open the app and load the Characters tab
+- Each app launch refreshes the widget with a new random selection of 20 characters
+- Tap ← / → to cycle through characters without opening the app
+
+### Xcode Setup (for contributors)
+
+The widget requires manual Xcode project configuration before building:
+
+1. Add App Group `group.com.fvg0902iosdev.RickMortyPersistImage.widget` to the main app target
+2. Create a new **Widget Extension** target named `CharacterWidgetExtension`
+3. Add the same App Group to the widget extension target
+4. Add `RickMortyPersistImage/Core/Storage/CharacterWidgetData.swift` to both targets
+5. Add all files in `CharacterWidgetExtension/` to the widget extension target
+6. Add `RickMortyPersistImage/Core/Storage/AppGroupStore.swift` to the main app target only
+
+---
+
 ## Author
 
 Fernando Vega — Senior iOS Developer  

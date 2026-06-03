@@ -8,13 +8,18 @@ final class CharactersListViewModel: ObservableObject {
     @Published var searchText = ""
 
     private let getCharactersUseCase: GetCharactersUseCaseProtocol
+    private let appGroupStore: AppGroupStoreProtocol?
     private var currentPage = 1
     private var hasNextPage = true
     private var allCharacters: [CharacterEntity] = []
     private var searchDebounceTask: Task<Void, Never>?
 
-    init(getCharactersUseCase: GetCharactersUseCaseProtocol) {
+    init(
+        getCharactersUseCase: GetCharactersUseCaseProtocol,
+        appGroupStore: AppGroupStoreProtocol? = nil
+    ) {
         self.getCharactersUseCase = getCharactersUseCase
+        self.appGroupStore = appGroupStore
     }
 
     func loadInitial() async {
@@ -69,10 +74,22 @@ final class CharactersListViewModel: ObservableObject {
             hasNextPage = result.hasNextPage
 
             viewState = allCharacters.isEmpty ? .empty : .success(allCharacters)
+            writeWidgetSnapshot()
         } catch {
             if allCharacters.isEmpty {
                 viewState = .failure(error)
             }
+        }
+    }
+
+    private func writeWidgetSnapshot() {
+        guard let store = appGroupStore else { return }
+        let snapshot = Array(allCharacters.shuffled().prefix(20)).map {
+            CharacterWidgetData(id: $0.id, name: $0.name, imageFileName: "\($0.id).jpg", imageURL: $0.imageURL)
+        }
+        store.writeSnapshot(snapshot)
+        Task.detached(priority: .background) {
+            await store.downloadImages(for: snapshot)
         }
     }
 

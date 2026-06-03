@@ -327,6 +327,24 @@ Rules:
 
 Image caching is centralized in `ImageCacheManager`. Views use `CachedAsyncImageView` — never use `AsyncImage` directly.
 
+### Widget Shared Storage (App Group)
+
+`AppGroupStore` (`Core/Storage/AppGroupStore.swift`) is the single point of access for sharing data between the main app and the WidgetKit extension via an App Group container.
+
+App Group identifier: `group.com.fvg0902iosdev.RickMortyPersistImage.widget`
+
+**Responsibilities:**
+- Write/read a `[CharacterWidgetData]` snapshot to `UserDefaults(suiteName:)` under key `widget.characters`
+- Persist the current widget navigation index under key `widget.currentIndex`
+- Download and cache character images to the shared App Group `FileManager` container (`Library/Caches/widget-images/<id>.jpg`) so the widget can load them synchronously
+
+**Pattern:**
+- `CharactersListViewModel` calls `store.writeSnapshot(_:)` synchronously after `ViewState.success`, passing `Array(allCharacters.shuffled().prefix(20))` mapped to `CharacterWidgetData`
+- Image download runs in a `Task.detached(priority: .background)` after the snapshot write — it does not block the UI
+- `AppGroupStoreProtocol` allows mock injection in tests; inject `nil` to disable widget writes in test scenarios
+
+**Key rule:** `AppGroupStore` is always injected via `DIContainer`. Never instantiate `AppGroupStore()` directly in ViewModels.
+
 ## Coding Standards
 
 ### Naming Conventions

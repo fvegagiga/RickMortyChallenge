@@ -7,11 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C62FE87C2FD061AB0007D433 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C62FE87B2FD061AB0007D433 /* WidgetKit.framework */; };
+		C62FE87E2FD061AC0007D433 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C62FE87D2FD061AC0007D433 /* SwiftUI.framework */; };
+		C62FE88F2FD061AD0007D433 /* CharacterWidgetExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C62FE8792FD061AB0007D433 /* CharacterWidgetExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CDBF907EBD8F430581712DF6 /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = 17C76E784527414C872F37EC /* Network */; };
 		F06364C94F7B4E4289269732 /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = 4368A0AF3DC44601AE6B2B34 /* Network */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		C62FE88D2FD061AD0007D433 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6BE91F82FC34CD80077BC27 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C62FE8782FD061AB0007D433;
+			remoteInfo = CharacterWidgetExtensionExtension;
+		};
 		C6BE920E2FC34CDA0077BC27 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C6BE91F82FC34CD80077BC27 /* Project object */;
@@ -28,16 +38,63 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C62FE8942FD061AD0007D433 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C62FE88F2FD061AD0007D433 /* CharacterWidgetExtensionExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		C62FE8792FD061AB0007D433 /* CharacterWidgetExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CharacterWidgetExtensionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C62FE87B2FD061AB0007D433 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		C62FE87D2FD061AC0007D433 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		C62FE8A42FD061B70007D433 /* CharacterWidgetExtensionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CharacterWidgetExtensionExtension.entitlements; sourceTree = "<group>"; };
 		C6BE92002FC34CD80077BC27 /* RickMortyPersistImage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RickMortyPersistImage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6BE920D2FC34CDA0077BC27 /* RickMortyPersistImageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyPersistImageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6BE92172FC34CDA0077BC27 /* RickMortyPersistImageUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyPersistImageUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6C245802FC4BF8E004425C1 /* RickMortyPersistImageTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RickMortyPersistImageTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C62FE8902FD061AD0007D433 /* Exceptions for "CharacterWidgetExtension" folder in "CharacterWidgetExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C62FE8782FD061AB0007D433 /* CharacterWidgetExtensionExtension */;
+		};
+		C62FE8A62FD061EF0007D433 /* Exceptions for "RickMortyPersistImage" folder in "CharacterWidgetExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Storage/AppGroupStore.swift,
+				Core/Storage/CharacterWidgetData.swift,
+			);
+			target = C62FE8782FD061AB0007D433 /* CharacterWidgetExtensionExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		C62FE87F2FD061AC0007D433 /* CharacterWidgetExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C62FE8902FD061AD0007D433 /* Exceptions for "CharacterWidgetExtension" folder in "CharacterWidgetExtensionExtension" target */,
+			);
+			path = CharacterWidgetExtension;
+			sourceTree = "<group>";
+		};
 		C6BE92022FC34CD80077BC27 /* RickMortyPersistImage */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C62FE8A62FD061EF0007D433 /* Exceptions for "RickMortyPersistImage" folder in "CharacterWidgetExtensionExtension" target */,
+			);
 			path = RickMortyPersistImage;
 			sourceTree = "<group>";
 		};
@@ -54,6 +111,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C62FE8762FD061AB0007D433 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C62FE87E2FD061AC0007D433 /* SwiftUI.framework in Frameworks */,
+				C62FE87C2FD061AB0007D433 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C6BE91FD2FC34CD80077BC27 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -80,13 +146,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C62FE87A2FD061AB0007D433 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C62FE87B2FD061AB0007D433 /* WidgetKit.framework */,
+				C62FE87D2FD061AC0007D433 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C6BE91F72FC34CD80077BC27 = {
 			isa = PBXGroup;
 			children = (
+				C62FE8A42FD061B70007D433 /* CharacterWidgetExtensionExtension.entitlements */,
 				C6C245802FC4BF8E004425C1 /* RickMortyPersistImageTests.xctestplan */,
 				C6BE92022FC34CD80077BC27 /* RickMortyPersistImage */,
 				C6BE92102FC34CDA0077BC27 /* RickMortyPersistImageTests */,
 				C6BE921A2FC34CDA0077BC27 /* RickMortyPersistImageUITests */,
+				C62FE87F2FD061AC0007D433 /* CharacterWidgetExtension */,
+				C62FE87A2FD061AB0007D433 /* Frameworks */,
 				C6BE92012FC34CD80077BC27 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -97,6 +175,7 @@
 				C6BE92002FC34CD80077BC27 /* RickMortyPersistImage.app */,
 				C6BE920D2FC34CDA0077BC27 /* RickMortyPersistImageTests.xctest */,
 				C6BE92172FC34CDA0077BC27 /* RickMortyPersistImageUITests.xctest */,
+				C62FE8792FD061AB0007D433 /* CharacterWidgetExtensionExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -104,6 +183,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C62FE8782FD061AB0007D433 /* CharacterWidgetExtensionExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C62FE8912FD061AD0007D433 /* Build configuration list for PBXNativeTarget "CharacterWidgetExtensionExtension" */;
+			buildPhases = (
+				C62FE8752FD061AB0007D433 /* Sources */,
+				C62FE8762FD061AB0007D433 /* Frameworks */,
+				C62FE8772FD061AB0007D433 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C62FE87F2FD061AC0007D433 /* CharacterWidgetExtension */,
+			);
+			name = CharacterWidgetExtensionExtension;
+			packageProductDependencies = (
+			);
+			productName = CharacterWidgetExtensionExtension;
+			productReference = C62FE8792FD061AB0007D433 /* CharacterWidgetExtensionExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C6BE91FF2FC34CD80077BC27 /* RickMortyPersistImage */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C6BE92212FC34CDA0077BC27 /* Build configuration list for PBXNativeTarget "RickMortyPersistImage" */;
@@ -111,10 +212,12 @@
 				C6BE91FC2FC34CD80077BC27 /* Sources */,
 				C6BE91FD2FC34CD80077BC27 /* Frameworks */,
 				C6BE91FE2FC34CD80077BC27 /* Resources */,
+				C62FE8942FD061AD0007D433 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C62FE88E2FD061AD0007D433 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				C6BE92022FC34CD80077BC27 /* RickMortyPersistImage */,
@@ -184,6 +287,9 @@
 				LastSwiftUpdateCheck = 2650;
 				LastUpgradeCheck = 2650;
 				TargetAttributes = {
+					C62FE8782FD061AB0007D433 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 					C6BE91FF2FC34CD80077BC27 = {
 						CreatedOnToolsVersion = 26.5;
 					};
@@ -217,11 +323,19 @@
 				C6BE91FF2FC34CD80077BC27 /* RickMortyPersistImage */,
 				C6BE920C2FC34CDA0077BC27 /* RickMortyPersistImageTests */,
 				C6BE92162FC34CDA0077BC27 /* RickMortyPersistImageUITests */,
+				C62FE8782FD061AB0007D433 /* CharacterWidgetExtensionExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		C62FE8772FD061AB0007D433 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C6BE91FE2FC34CD80077BC27 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -246,6 +360,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C62FE8752FD061AB0007D433 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C6BE91FC2FC34CD80077BC27 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -270,6 +391,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		C62FE88E2FD061AD0007D433 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C62FE8782FD061AB0007D433 /* CharacterWidgetExtensionExtension */;
+			targetProxy = C62FE88D2FD061AD0007D433 /* PBXContainerItemProxy */;
+		};
 		C6BE920F2FC34CDA0077BC27 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C6BE91FF2FC34CD80077BC27 /* RickMortyPersistImage */;
@@ -283,6 +409,68 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		C62FE8922FD061AD0007D433 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CharacterWidgetExtensionExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5MPC35WK7F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CharacterWidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CharacterWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fvg0902iosdev.RickMortyPersistImage.CharacterWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C62FE8932FD061AD0007D433 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = CharacterWidgetExtensionExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5MPC35WK7F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CharacterWidgetExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CharacterWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fvg0902iosdev.RickMortyPersistImage.CharacterWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		C6BE921F2FC34CDA0077BC27 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -409,6 +597,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RickMortyPersistImage/RickMortyPersistImage.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5MPC35WK7F;
@@ -443,6 +632,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RickMortyPersistImage/RickMortyPersistImage.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5MPC35WK7F;
@@ -563,6 +753,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C62FE8912FD061AD0007D433 /* Build configuration list for PBXNativeTarget "CharacterWidgetExtensionExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C62FE8922FD061AD0007D433 /* Debug */,
+				C62FE8932FD061AD0007D433 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C6BE91FB2FC34CD80077BC27 /* Build configuration list for PBXProject "RickMortyPersistImage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
