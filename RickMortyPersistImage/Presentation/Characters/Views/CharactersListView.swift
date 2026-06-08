@@ -52,6 +52,7 @@ struct CharactersListView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier("character-card")
                         .task {
                             await viewModel.loadMoreIfNeeded(currentItem: character)
                         }

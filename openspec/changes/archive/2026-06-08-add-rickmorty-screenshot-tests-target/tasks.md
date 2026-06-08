@@ -28,7 +28,7 @@
 
 - [x] 4.1 Run `xcodebuild test` including the screenshot target and save the report under `openspec/changes/add-rickmorty-screenshot-tests-target/specs/ui-screenshot-regression-tests/reports/`
 - [x] 4.2 Perform simulator verification for all app screens to confirm screenshot assertions match expected UI states
-- [ ] 4.3 Run XCUITest flows to ensure screenshot test additions do not regress existing UI behavior checks
+- [x] 4.3 Run XCUITest flows to ensure screenshot test additions do not regress existing UI behavior checks
 
 ## 5. Finalization
 

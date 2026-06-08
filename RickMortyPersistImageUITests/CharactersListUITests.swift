@@ -43,8 +43,7 @@ final class CharactersListUITests: XCTestCase {
             "Characters list must load before interacting"
         )
 
-        // Wait for at least one character card to appear
-        let firstCard = app.buttons.element(boundBy: 0)
+        let firstCard = app.buttons["character-card"].firstMatch
         XCTAssertTrue(
             firstCard.waitForExistence(timeout: 15),
             "At least one character card should appear after loading"
