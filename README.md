@@ -251,7 +251,7 @@ The project includes a dedicated test target: `RickMortyPersistImageScreenshotTe
   - Locations list (`content`, `loading`, `empty`, `error`)
   - Episodes list (`content`, `loading`, `empty`, `error`)
 
-Baselines are stored in `RickMortyPersistImageScreenshotTests/__Snapshots__/`.
+Baselines are stored in `RickMortyPersistImageScreenshotTests/snapshots/`.
 
 To refresh baselines after intentional UI changes:
 
@@ -259,7 +259,7 @@ To refresh baselines after intentional UI changes:
 2. Run `xcodebuild test -project "RickMortyPersistImage.xcodeproj" -scheme "RickMortyPersistImageScreenshotTests" -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"`
 3. Set `RECORD_SNAPSHOTS` back to `0` in the scheme.
 4. Run the same command again to verify the refreshed baselines.
-5. Review updated PNG files in `RickMortyPersistImageScreenshotTests/__Snapshots__/`
+5. Review updated PNG files in `RickMortyPersistImageScreenshotTests/snapshots/`
 6. Commit the baseline PNG updates together with the UI change
 
 ---

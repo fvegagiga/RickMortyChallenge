@@ -9,6 +9,7 @@
 - [x] 1.3 Implement deterministic screenshot harness (fixed device, locale, appearance, and content size)
 - [x] 1.4 Exclude approved baseline PNG files from the screenshot test bundle resources
 - [x] 1.5 Disable production app bootstrap while screenshot tests run inside the host app
+- [x] 1.6 Expose approved baselines in Xcode under a `snapshots` directory without adding them as target resources
 
 ## 2. Screen Coverage Implementation
 

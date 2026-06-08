@@ -28,6 +28,18 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "NO">
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "RECORD_SNAPSHOTS"
+            value = "0"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "DISABLE_APP_BOOTSTRAP_FOR_SCREENSHOT_TESTS"
+            value = "1"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <Testables>
          <TestableReference
             skipped = "NO"

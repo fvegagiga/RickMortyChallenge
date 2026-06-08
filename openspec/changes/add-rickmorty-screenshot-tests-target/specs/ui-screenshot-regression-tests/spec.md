@@ -29,6 +29,10 @@ Screenshot tests MUST run under deterministic rendering conditions including fix
 - **WHEN** the screenshot test target is built
 - **THEN** approved baseline PNG files are kept in source control for comparison and are not copied into the test bundle as runtime resources
 
+#### Scenario: Baselines are visible in Xcode
+- **WHEN** developers inspect the screenshot test folder in Xcode
+- **THEN** approved baseline PNG files are visible under a `snapshots` directory without being target resources
+
 #### Scenario: Host app does not load production content
 - **WHEN** screenshot tests execute inside the host application
 - **THEN** the production app bootstrap is disabled so network-backed screens do not run in parallel with the screenshot harness

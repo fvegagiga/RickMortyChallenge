@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import UIKit
 import XCTest
-import SnapshotTestKit
 @testable import RickMortyPersistImage
 
 @MainActor
@@ -246,7 +245,7 @@ final class ScreenshotRegressionTests: XCTestCase {
         host.view.setNeedsLayout()
         host.view.layoutIfNeeded()
 
-        SnapshotTestKit.assertSnapshot(
+        assertImageSnapshot(
             of: renderImage(from: host),
             named: snapshotName,
             record: ProcessInfo.processInfo.environment["RECORD_SNAPSHOTS"] == "1",
@@ -254,6 +253,71 @@ final class ScreenshotRegressionTests: XCTestCase {
             testName: name,
             line: #line
         )
+    }
+
+    private func assertImageSnapshot(
+        of image: UIImage,
+        named snapshotName: String,
+        record: Bool,
+        file: StaticString = #filePath,
+        testName: String = #function,
+        line: UInt = #line
+    ) {
+        guard !isUniform(image) else {
+            XCTFail("Captured snapshot is blank or uniform for \(snapshotName). Ensure the rendered view contains visible UI before asserting.", file: file, line: line)
+            return
+        }
+
+        guard let imageData = image.pngData() else {
+            XCTFail("Unable to encode snapshot PNG data.", file: file, line: line)
+            return
+        }
+
+        let fileURL = URL(fileURLWithPath: "\(file)")
+        let snapshotsDirectory = fileURL.deletingLastPathComponent().appendingPathComponent("snapshots", isDirectory: true)
+        let sanitizedSnapshotName = sanitize(snapshotName)
+        let snapshotFileURL = snapshotsDirectory.appendingPathComponent("\(sanitizedSnapshotName).png")
+        let failedSnapshotFileURL = snapshotsDirectory.appendingPathComponent("\(sanitizedSnapshotName)_failed.png")
+
+        do {
+            try FileManager.default.createDirectory(at: snapshotsDirectory, withIntermediateDirectories: true)
+        } catch {
+            XCTFail("Unable to create snapshots folder: \(error)", file: file, line: line)
+            return
+        }
+
+        if record || !FileManager.default.fileExists(atPath: snapshotFileURL.path) {
+            writeSnapshot(imageData, to: snapshotFileURL, file: file, line: line)
+            removeSnapshotIfNeeded(at: failedSnapshotFileURL)
+            return
+        }
+
+        guard let baselineData = try? Data(contentsOf: snapshotFileURL) else {
+            XCTFail("Unable to read baseline snapshot at \(snapshotFileURL.path)", file: file, line: line)
+            return
+        }
+
+        guard baselineData == imageData else {
+            writeSnapshot(imageData, to: failedSnapshotFileURL, file: file, line: line)
+
+            let baselineAttachment = XCTAttachment(data: baselineData, uniformTypeIdentifier: "public.png")
+            baselineAttachment.name = "Baseline"
+            baselineAttachment.lifetime = .keepAlways
+
+            let failedAttachment = XCTAttachment(data: imageData, uniformTypeIdentifier: "public.png")
+            failedAttachment.name = "Current"
+            failedAttachment.lifetime = .keepAlways
+
+            XCTContext.runActivity(named: "Snapshot mismatch") { activity in
+                activity.add(baselineAttachment)
+                activity.add(failedAttachment)
+            }
+
+            XCTFail("Snapshot mismatch for \(snapshotName). Baseline: \(snapshotFileURL.path), Current: \(failedSnapshotFileURL.path)", file: file, line: line)
+            return
+        }
+
+        removeSnapshotIfNeeded(at: failedSnapshotFileURL)
     }
 
     private func renderImage(from viewController: UIViewController) -> UIImage {
@@ -266,6 +330,65 @@ final class ScreenshotRegressionTests: XCTestCase {
                 viewController.view.drawHierarchy(in: bounds, afterScreenUpdates: true)
             }
         }
+    }
+
+    private func isUniform(_ image: UIImage) -> Bool {
+        guard let cgImage = image.cgImage else { return true }
+
+        let sampleWidth = 32
+        let sampleHeight = 32
+        let bytesPerPixel = 4
+        let bytesPerRow = sampleWidth * bytesPerPixel
+        var pixels = [UInt8](repeating: 0, count: sampleHeight * bytesPerRow)
+
+        guard let context = CGContext(
+            data: &pixels,
+            width: sampleWidth,
+            height: sampleHeight,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return true
+        }
+
+        context.interpolationQuality = .none
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: sampleWidth, height: sampleHeight))
+
+        let firstPixel = Array(pixels[0..<bytesPerPixel])
+        let tolerance = 3
+
+        for index in stride(from: bytesPerPixel, to: pixels.count, by: bytesPerPixel) {
+            let currentPixel = pixels[index..<(index + bytesPerPixel)]
+            for channel in 0..<bytesPerPixel where abs(Int(currentPixel[currentPixel.startIndex + channel]) - Int(firstPixel[channel])) > tolerance {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private func writeSnapshot(
+        _ data: Data,
+        to fileURL: URL,
+        file: StaticString,
+        line: UInt
+    ) {
+        do {
+            try data.write(to: fileURL, options: [.atomic])
+        } catch {
+            XCTFail("Unable to write snapshot file at \(fileURL.path): \(error)", file: file, line: line)
+        }
+    }
+
+    private func removeSnapshotIfNeeded(at fileURL: URL) {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else { return }
+        try? FileManager.default.removeItem(at: fileURL)
+    }
+
+    private func sanitize(_ value: String) -> String {
+        value.replacingOccurrences(of: "[^A-Za-z0-9_\\-\\.]", with: "_", options: .regularExpression)
     }
 
     private func configured<Content: View>(_ view: Content) -> some View {
