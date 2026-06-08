@@ -15,7 +15,10 @@ struct CharacterDetailView: View {
                 LoadingView()
 
             case .success(let character):
-                detailContent(character)
+                CharacterDetailContentView(
+                    character: character,
+                    cacheManager: container.imageCacheManager
+                )
 
             case .empty:
                 EmptyStateView()
@@ -29,36 +32,52 @@ struct CharacterDetailView: View {
         .task { await viewModel.loadDetail() }
         .navigationBarTitleDisplayMode(.inline)
     }
+}
 
-    @ViewBuilder
-    private func detailContent(_ character: CharacterEntity) -> some View {
+struct CharacterDetailContentView: View {
+    let character: CharacterEntity
+    let cacheManager: ImageCacheManagerProtocol
+
+    var body: some View {
         ScrollView {
-            VStack(spacing: 0) {
-                heroSection(character)
-                infoSection(character)
-            }
+            CharacterDetailContentBodyView(
+                character: character,
+                cacheManager: cacheManager
+            )
         }
         .navigationTitle(character.name)
         .ignoresSafeArea(edges: .top)
     }
+}
+
+struct CharacterDetailContentBodyView: View {
+    let character: CharacterEntity
+    let cacheManager: ImageCacheManagerProtocol
+
+    var body: some View {
+        VStack(spacing: 0) {
+            heroSection
+            infoSection
+        }
+    }
 
     @ViewBuilder
-    private func heroSection(_ character: CharacterEntity) -> some View {
-        CachedAsyncImageView(
-            url: character.imageURL,
-            cacheManager: container.imageCacheManager
-        ) { image in
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-        } placeholder: {
-            Rectangle()
-                .fill(Color.DS.cardBackground)
-                .overlay {
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 72))
-                        .foregroundStyle(Color.DS.textTertiary)
+    private var heroSection: some View {
+        Group {
+            if let imageURL = character.imageURL {
+                CachedAsyncImageView(
+                    url: imageURL,
+                    cacheManager: cacheManager
+                ) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    heroPlaceholder
                 }
+            } else {
+                heroPlaceholder
+            }
         }
         .frame(height: 340)
         .clipped()
@@ -83,8 +102,18 @@ struct CharacterDetailView: View {
         }
     }
 
+    private var heroPlaceholder: some View {
+        Rectangle()
+            .fill(Color.DS.cardBackground)
+            .overlay {
+                Image(systemName: "person.fill")
+                    .font(.system(size: 72))
+                    .foregroundStyle(Color.DS.textTertiary)
+            }
+    }
+
     @ViewBuilder
-    private func infoSection(_ character: CharacterEntity) -> some View {
+    private var infoSection: some View {
         VStack(spacing: DSSpacing.md) {
             infoRow(icon: "person.fill",       label: "Species",  value: character.species)
             infoRow(icon: "waveform.path.ecg", label: "Status",   value: character.status.displayName)

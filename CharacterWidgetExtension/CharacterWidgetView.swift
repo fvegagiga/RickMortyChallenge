@@ -60,7 +60,7 @@ struct CharacterWidgetView: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 characterImage
-                    .frame(width: 120)
+                    .frame(width: 118)
                     .frame(maxHeight: .infinity)
                     .clipped()
 
@@ -68,10 +68,10 @@ struct CharacterWidgetView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .padding(.trailing, DSSpacing.xs)
 
             wideNavigationBar
-                .padding(.bottom, DSSpacing.xxs)
+                .padding(.bottom, DSSpacing.xs)
+                .padding(.top, DSSpacing.xxs)
         }
         .containerBackground(.background, for: .widget)
     }
@@ -154,10 +154,10 @@ struct CharacterWidgetView: View {
                     .foregroundStyle(Color.DS.textSecondary)
             }
         }
-        .padding(.top, DSSpacing.xs)
-        .padding(.bottom, DSSpacing.xxs)
+        .padding(.top, DSSpacing.sm)
+        .padding(.bottom, DSSpacing.sm)
         .padding(.leading, DSSpacing.xs)
-        .padding(.trailing, DSSpacing.xs)
+        .padding(.trailing, DSSpacing.sm)
     }
 
     private var navigationBar: some View {
@@ -213,7 +213,6 @@ struct CharacterWidgetView: View {
             .foregroundStyle(Color.DS.portalGreen)
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, DSSpacing.xxs)
     }
 }
 

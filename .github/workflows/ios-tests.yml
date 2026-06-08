@@ -1,0 +1,32 @@
+name: iOS Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  tests:
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Run Unit + UI Tests
+        run: |
+          xcodebuild test \
+            -project "RickMortyPersistImage.xcodeproj" \
+            -scheme "RickMortyPersistImage" \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"
+
+      - name: Run Screenshot Regression Tests
+        run: |
+          xcodebuild test \
+            -project "RickMortyPersistImage.xcodeproj" \
+            -scheme "RickMortyPersistImageScreenshotTests" \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"

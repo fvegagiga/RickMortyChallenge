@@ -7,9 +7,13 @@ struct RickMortyPersistImageApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environmentObject(container)
-                .environmentObject(router)
+            if ProcessInfo.processInfo.environment["DISABLE_APP_BOOTSTRAP_FOR_SCREENSHOT_TESTS"] == "1" {
+                Color.clear
+            } else {
+                MainTabView()
+                    .environmentObject(container)
+                    .environmentObject(router)
+            }
         }
     }
 }

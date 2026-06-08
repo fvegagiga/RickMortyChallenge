@@ -23,7 +23,7 @@ A production-quality iOS application built for a **Senior iOS Developer** techni
 | Image Persistence | FileManager + NSCache (two-level) |
 | Networking | `URLSession` with protocol abstraction |
 | Minimum Deployment | iOS 16.0 |
-| Testing | XCTest (Unit + UI) |
+| Testing | XCTest (Unit + UI + Screenshot Regression) |
 | DI | Manual constructor injection via `DIContainer` |
 
 ---
@@ -239,6 +239,29 @@ Tests verify **observable behaviour** (state changes, call counts, error propaga
 | `testTabBar_containsAllThreeTabs` | All three tabs exist in the TabView |
 | `testSwitchingTabs_showsCorrectNavigationTitle` | Each tab shows its own navigation stack |
 
+### Screenshot Regression Tests
+
+The project includes a dedicated test target: `RickMortyPersistImageScreenshotTests`.
+
+- Fixed simulator profile: `iPhone 16` (`OS 18.4`)
+- Fixed rendering environment: light mode, `en_US_POSIX`, medium content size, left-to-right layout
+- Covered screen entry points:
+  - Characters list (`content`, `loading`, `empty`, `error`)
+  - Character detail (`content`, `loading`, `error`)
+  - Locations list (`content`, `loading`, `empty`, `error`)
+  - Episodes list (`content`, `loading`, `empty`, `error`)
+
+Baselines are stored in `RickMortyPersistImageScreenshotTests/__Snapshots__/`.
+
+To refresh baselines after intentional UI changes:
+
+1. Temporarily set `RECORD_SNAPSHOTS` to `1` in the `RickMortyPersistImageScreenshotTests` scheme.
+2. Run `xcodebuild test -project "RickMortyPersistImage.xcodeproj" -scheme "RickMortyPersistImageScreenshotTests" -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"`
+3. Set `RECORD_SNAPSHOTS` back to `0` in the scheme.
+4. Run the same command again to verify the refreshed baselines.
+5. Review updated PNG files in `RickMortyPersistImageScreenshotTests/__Snapshots__/`
+6. Commit the baseline PNG updates together with the UI change
+
 ---
 
 ## Scalability Examples
@@ -261,8 +284,7 @@ Tests verify **observable behaviour** (state changes, call counts, error propaga
 3. Press `⌘R` to run
 4. Press `⌘U` to run all unit tests
 5. For UI tests, select the `RickMortyPersistImageUITests` scheme and press `⌘U`
-
-No third-party dependencies. No SPM packages required.
+6. For screenshot tests, select the `RickMortyPersistImageScreenshotTests` scheme and press `⌘U`
 
 ---
 

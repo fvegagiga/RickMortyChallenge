@@ -10,6 +10,8 @@
 		C62FE87C2FD061AB0007D433 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C62FE87B2FD061AB0007D433 /* WidgetKit.framework */; };
 		C62FE87E2FD061AC0007D433 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C62FE87D2FD061AC0007D433 /* SwiftUI.framework */; };
 		C62FE88F2FD061AD0007D433 /* CharacterWidgetExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C62FE8792FD061AB0007D433 /* CharacterWidgetExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C7AA10012FD1000000010001 /* SnapshotTestKit in Frameworks */ = {isa = PBXBuildFile; productRef = C7AA100E2FD1000000010001 /* SnapshotTestKit */; };
+		C7AA10112FD1000000010001 /* ScreenshotRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AA10102FD1000000010001 /* ScreenshotRegressionTests.swift */; };
 		CDBF907EBD8F430581712DF6 /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = 17C76E784527414C872F37EC /* Network */; };
 		F06364C94F7B4E4289269732 /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = 4368A0AF3DC44601AE6B2B34 /* Network */; };
 /* End PBXBuildFile section */
@@ -30,6 +32,13 @@
 			remoteInfo = RickMortyPersistImage;
 		};
 		C6BE92182FC34CDA0077BC27 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6BE91F82FC34CD80077BC27 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C6BE91FF2FC34CD80077BC27;
+			remoteInfo = RickMortyPersistImage;
+		};
+		C7AA10022FD1000000010001 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C6BE91F82FC34CD80077BC27 /* Project object */;
 			proxyType = 1;
@@ -61,6 +70,8 @@
 		C6BE920D2FC34CDA0077BC27 /* RickMortyPersistImageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyPersistImageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6BE92172FC34CDA0077BC27 /* RickMortyPersistImageUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyPersistImageUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6C245802FC4BF8E004425C1 /* RickMortyPersistImageTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RickMortyPersistImageTests.xctestplan; sourceTree = "<group>"; };
+		C7AA10032FD1000000010001 /* RickMortyPersistImageScreenshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickMortyPersistImageScreenshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7AA10102FD1000000010001 /* ScreenshotRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotRegressionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -146,6 +157,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C7AA10052FD1000000010001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7AA10012FD1000000010001 /* SnapshotTestKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -166,6 +185,7 @@
 				C6BE92022FC34CD80077BC27 /* RickMortyPersistImage */,
 				C6BE92102FC34CDA0077BC27 /* RickMortyPersistImageTests */,
 				C6BE921A2FC34CDA0077BC27 /* RickMortyPersistImageUITests */,
+				C7AA10042FD1000000010001 /* RickMortyPersistImageScreenshotTests */,
 				C62FE87F2FD061AC0007D433 /* CharacterWidgetExtension */,
 				C62FE87A2FD061AB0007D433 /* Frameworks */,
 				C6BE92012FC34CD80077BC27 /* Products */,
@@ -178,9 +198,18 @@
 				C6BE92002FC34CD80077BC27 /* RickMortyPersistImage.app */,
 				C6BE920D2FC34CDA0077BC27 /* RickMortyPersistImageTests.xctest */,
 				C6BE92172FC34CDA0077BC27 /* RickMortyPersistImageUITests.xctest */,
+				C7AA10032FD1000000010001 /* RickMortyPersistImageScreenshotTests.xctest */,
 				C62FE8792FD061AB0007D433 /* CharacterWidgetExtensionExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C7AA10042FD1000000010001 /* RickMortyPersistImageScreenshotTests */ = {
+			isa = PBXGroup;
+			children = (
+				C7AA10102FD1000000010001 /* ScreenshotRegressionTests.swift */,
+			);
+			path = RickMortyPersistImageScreenshotTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -280,6 +309,27 @@
 			productReference = C6BE92172FC34CDA0077BC27 /* RickMortyPersistImageUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		C7AA10062FD1000000010001 /* RickMortyPersistImageScreenshotTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7AA100C2FD1000000010001 /* Build configuration list for PBXNativeTarget "RickMortyPersistImageScreenshotTests" */;
+			buildPhases = (
+				C7AA10082FD1000000010001 /* Sources */,
+				C7AA10052FD1000000010001 /* Frameworks */,
+				C7AA10072FD1000000010001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C7AA10092FD1000000010001 /* PBXTargetDependency */,
+			);
+			name = RickMortyPersistImageScreenshotTests;
+			packageProductDependencies = (
+				C7AA100E2FD1000000010001 /* SnapshotTestKit */,
+			);
+			productName = RickMortyPersistImageScreenshotTests;
+			productReference = C7AA10032FD1000000010001 /* RickMortyPersistImageScreenshotTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -304,6 +354,10 @@
 						CreatedOnToolsVersion = 26.5;
 						TestTargetID = C6BE91FF2FC34CD80077BC27;
 					};
+					C7AA10062FD1000000010001 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = C6BE91FF2FC34CD80077BC27;
+					};
 				};
 			};
 			buildConfigurationList = C6BE91FB2FC34CD80077BC27 /* Build configuration list for PBXProject "RickMortyPersistImage" */;
@@ -317,6 +371,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				C64CE9892FCDE846007D31D1 /* XCRemoteSwiftPackageReference "Network" */,
+				C7AA100D2FD1000000010001 /* XCLocalSwiftPackageReference "Packages/SnapshotTestKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C6BE92012FC34CD80077BC27 /* Products */;
@@ -326,6 +381,7 @@
 				C6BE91FF2FC34CD80077BC27 /* RickMortyPersistImage */,
 				C6BE920C2FC34CDA0077BC27 /* RickMortyPersistImageTests */,
 				C6BE92162FC34CDA0077BC27 /* RickMortyPersistImageUITests */,
+				C7AA10062FD1000000010001 /* RickMortyPersistImageScreenshotTests */,
 				C62FE8782FD061AB0007D433 /* CharacterWidgetExtensionExtension */,
 			);
 		};
@@ -354,6 +410,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C6BE92152FC34CDA0077BC27 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7AA10072FD1000000010001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -391,6 +454,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C7AA10082FD1000000010001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7AA10112FD1000000010001 /* ScreenshotRegressionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -408,6 +479,11 @@
 			isa = PBXTargetDependency;
 			target = C6BE91FF2FC34CD80077BC27 /* RickMortyPersistImage */;
 			targetProxy = C6BE92182FC34CDA0077BC27 /* PBXContainerItemProxy */;
+		};
+		C7AA10092FD1000000010001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C6BE91FF2FC34CD80077BC27 /* RickMortyPersistImage */;
+			targetProxy = C7AA10022FD1000000010001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -753,6 +829,52 @@
 			};
 			name = Release;
 		};
+		C7AA100A2FD1000000010001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5MPC35WK7F;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fvg0902iosdev.RickMortyPersistImageScreenshotTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RickMortyPersistImage.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RickMortyPersistImage";
+			};
+			name = Debug;
+		};
+		C7AA100B2FD1000000010001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5MPC35WK7F;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fvg0902iosdev.RickMortyPersistImageScreenshotTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RickMortyPersistImage.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RickMortyPersistImage";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -801,9 +923,22 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		C7AA100C2FD1000000010001 /* Build configuration list for PBXNativeTarget "RickMortyPersistImageScreenshotTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7AA100A2FD1000000010001 /* Debug */,
+				C7AA100B2FD1000000010001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		C7AA100D2FD1000000010001 /* XCLocalSwiftPackageReference "Packages/SnapshotTestKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/SnapshotTestKit;
+		};
 		D1AC6E49D77D4F10A44C29A3 /* XCLocalSwiftPackageReference "Packages/Network" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/Network;
@@ -831,6 +966,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D1AC6E49D77D4F10A44C29A3 /* XCLocalSwiftPackageReference "Packages/Network" */;
 			productName = Network;
+		};
+		C7AA100E2FD1000000010001 /* SnapshotTestKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C7AA100D2FD1000000010001 /* XCLocalSwiftPackageReference "Packages/SnapshotTestKit" */;
+			productName = SnapshotTestKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

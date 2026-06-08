@@ -45,7 +45,7 @@ struct EpisodesListView: View {
 
         case .empty:
             EmptyStateView(
-                icon: "film.slash",
+                icon: "film",
                 title: "No Episodes Found",
                 subtitle: "There are no episodes to display."
             )

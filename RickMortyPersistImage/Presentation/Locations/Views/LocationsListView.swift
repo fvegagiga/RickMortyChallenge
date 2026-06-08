@@ -45,7 +45,7 @@ struct LocationsListView: View {
 
         case .empty:
             EmptyStateView(
-                icon: "globe.slash",
+                icon: "globe.americas",
                 title: "No Locations Found",
                 subtitle: "There are no locations to display."
             )
