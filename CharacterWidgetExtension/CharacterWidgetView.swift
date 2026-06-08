@@ -12,7 +12,7 @@ struct CharacterWidgetView: View {
         case .systemSmall:
             smallLayout
         case .systemMedium:
-            mediumLayout
+            wideLayout
         default:
             smallLayout
         }
@@ -54,36 +54,25 @@ struct CharacterWidgetView: View {
         .containerBackground(.background, for: .widget)
     }
 
-    // MARK: - systemMedium
+    // MARK: - Wide (1x2)
 
-    private var mediumLayout: some View {
-        HStack(spacing: 0) {
-            ZStack(alignment: .bottom) {
+    private var wideLayout: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
                 characterImage
+                    .frame(width: 120)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
+
+                wideInfoPanel
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                LinearGradient(
-                    colors: [.clear, .black.opacity(0.55)],
-                    startPoint: .center,
-                    endPoint: .bottom
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                VStack(spacing: 0) {
-                    nameLabel
-                        .padding(.horizontal, DSSpacing.xs)
-                        .padding(.vertical, DSSpacing.xxs)
-                        .frame(maxWidth: .infinity)
-
-                    navigationBar
-                }
             }
-            .aspectRatio(1, contentMode: .fit)
-            .clipped()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .padding(.trailing, DSSpacing.xs)
 
-            Spacer()
+            wideNavigationBar
+                .padding(.bottom, DSSpacing.xxs)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .containerBackground(.background, for: .widget)
     }
 
@@ -138,6 +127,39 @@ struct CharacterWidgetView: View {
         }
     }
 
+    private var wideInfoPanel: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+            if entry.character != nil {
+                HStack(spacing: DSSpacing.xxs) {
+                    Circle()
+                        .fill(statusColor)
+                        .frame(width: 8, height: 8)
+                    Text(entry.character?.status ?? "Unknown")
+                        .font(Font.DS.caption2)
+                        .foregroundStyle(Color.DS.textSecondary)
+                }
+            }
+
+            Text(entry.character?.name ?? "Open the app to load characters")
+                .font(Font.DS.caption)
+                .foregroundStyle(Color.DS.textPrimary)
+                .multilineTextAlignment(.leading)
+                .lineLimit(3)
+
+            Spacer(minLength: 0)
+
+            if entry.totalCount > 0 {
+                Text("\(entry.currentIndex + 1) / \(entry.totalCount)")
+                    .font(Font.DS.caption2)
+                    .foregroundStyle(Color.DS.textSecondary)
+            }
+        }
+        .padding(.top, DSSpacing.xs)
+        .padding(.bottom, DSSpacing.xxs)
+        .padding(.leading, DSSpacing.xs)
+        .padding(.trailing, DSSpacing.xs)
+    }
+
     private var navigationBar: some View {
         HStack {
             Button(intent: PreviousCharacterIntent()) {
@@ -168,6 +190,30 @@ struct CharacterWidgetView: View {
         }
         .padding(.horizontal, DSSpacing.xs)
         .padding(.vertical, DSSpacing.xxs)
+    }
+
+    private var wideNavigationBar: some View {
+        HStack {
+            Button(intent: PreviousCharacterIntent()) {
+                Image(systemName: "chevron.left")
+                    .font(Font.DS.caption)
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(Color.DS.portalGreen)
+
+            Spacer()
+
+            Button(intent: NextCharacterIntent()) {
+                Image(systemName: "chevron.right")
+                    .font(Font.DS.caption)
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(Color.DS.portalGreen)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, DSSpacing.xxs)
     }
 }
 
