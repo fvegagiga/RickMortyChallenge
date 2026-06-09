@@ -2,8 +2,13 @@ name: iOS Tests
 
 on:
   pull_request:
-  push:
-    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-tests-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   tests:
@@ -16,6 +21,28 @@ jobs:
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            spm-${{ runner.os }}-
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('**/Package.resolved', 'RickMortyChallenge.xcodeproj/project.pbxproj') }}
+          restore-keys: |
+            deriveddata-${{ runner.os }}-
+
+      - name: Resolve Package Dependencies
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project "RickMortyChallenge.xcodeproj" \
+            -scheme "RickMortyChallenge"
 
       - name: Run Unit + UI Tests
         run: |
