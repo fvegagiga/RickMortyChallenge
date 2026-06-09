@@ -19,32 +19,32 @@
 
 ## 3. Run Unit Tests with xcodebuild (MANDATORY — AGENT MUST EXECUTE)
 
-- [ ] 3.1 Run full unit test suite: `xcodebuild test -project RickMortyChallenge.xcodeproj -scheme RickMortyChallenge -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" -only-testing:RickMortyChallengeTests`
-- [ ] 3.2 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-3-unit-test-verification.md`
-- [ ] 3.3 Mark step complete only after all unit tests pass and the report exists
+- [x] 3.1 Run full unit test suite: `xcodebuild test -project RickMortyChallenge.xcodeproj -scheme RickMortyChallenge -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" -only-testing:RickMortyChallengeTests`
+- [x] 3.2 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-3-unit-test-verification.md`
+- [x] 3.3 Mark step complete only after all unit tests pass and the report exists
 
 ## 4. Run XCUITest Automated UI Tests (MANDATORY — AGENT MUST EXECUTE)
 
-- [ ] 4.1 Run XCUITests: `xcodebuild test -project RickMortyChallenge.xcodeproj -scheme RickMortyChallenge -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" -only-testing:RickMortyChallengeUITests`
-- [ ] 4.2 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-4-xcuitest-verification.md`
-- [ ] 4.3 Mark step complete only after XCUITests pass and the report exists
+- [x] 4.1 Run XCUITests: `xcodebuild test -project RickMortyChallenge.xcodeproj -scheme RickMortyChallenge -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" -only-testing:RickMortyChallengeUITests`
+- [x] 4.2 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-4-xcuitest-verification.md`
+- [x] 4.3 Mark step complete only after XCUITests pass and the report exists
 
 ## 5. Run Screenshot Tests (MANDATORY — AGENT MUST EXECUTE)
 
-- [ ] 5.1 Run screenshot tests: `xcodebuild test -project RickMortyChallenge.xcodeproj -scheme RickMortyChallengeScreenshotTests -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"`
-- [ ] 5.2 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-5-screenshot-test-verification.md`
-- [ ] 5.3 Mark step complete only after screenshot tests pass and the report exists
+- [x] 5.1 Run screenshot tests: `xcodebuild test -project RickMortyChallenge.xcodeproj -scheme RickMortyChallengeScreenshotTests -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"`
+- [x] 5.2 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-5-screenshot-test-verification.md`
+- [x] 5.3 Mark step complete only after screenshot tests pass and the report exists
 
 ## 6. CI Workflow Verification (MANDATORY — AGENT MUST EXECUTE)
 
-- [ ] 6.1 Push branch and open a pull request; confirm **iOS Tests** workflow runs on the PR
-- [ ] 6.2 Verify cache restore/save steps appear in workflow logs
-- [ ] 6.3 Verify both test steps pass: `RickMortyChallenge` and `RickMortyChallengeScreenshotTests`
-- [ ] 6.4 After merge (or by inspecting Actions history), confirm no workflow run is triggered by push to `main`
-- [ ] 6.5 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-6-ci-verification.md` with workflow run URL, cache status, and post-merge trigger confirmation
+- [x] 6.1 Push branch and open a pull request; confirm **iOS Tests** workflow runs on the PR
+- [x] 6.2 Verify cache restore/save steps appear in workflow logs
+- [x] 6.3 Verify both test steps pass: `RickMortyChallenge` and `RickMortyChallengeScreenshotTests`
+- [x] 6.4 After merge (or by inspecting Actions history), confirm no workflow run is triggered by push to `main`
+- [x] 6.5 Create report `openspec/changes/ci-pr-only-workflow/specs/ci-ios-tests/reports/2026-06-09-step-6-ci-verification.md` with workflow run URL, cache status, and post-merge trigger confirmation
 
 ## 7. Update Technical Documentation (MANDATORY)
 
-- [ ] 7.1 Update `README.md` CI/CD section: state workflow runs on pull requests only (not on push to `main`)
-- [ ] 7.2 Mention caching and concurrency behaviour at a high level in the CI/CD section
-- [ ] 7.3 Confirm Testing Strategy section remains accurate (no test target changes)
+- [x] 7.1 Update `README.md` CI/CD section: state workflow runs on pull requests only (not on push to `main`)
+- [x] 7.2 Mention caching and concurrency behaviour at a high level in the CI/CD section
+- [x] 7.3 Confirm Testing Strategy section remains accurate (no test target changes)
