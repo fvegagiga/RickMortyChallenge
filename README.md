@@ -341,8 +341,11 @@ To refresh baselines after intentional UI changes:
 
 ## CI/CD
 
-GitHub Actions workflow (`.github/workflows/ios-tests.yml`) runs on every push to `main` and on pull requests:
+GitHub Actions workflow (`.github/workflows/ios-tests.yml`) runs on pull requests only (not on pushes to `main` after merge):
 
+- **Trigger:** `pull_request` events targeting `main`
+- **Concurrency:** In-progress runs for the same PR are cancelled when new commits are pushed
+- **Caching:** Swift Package Manager artifacts and Xcode DerivedData are cached between runs (keyed on `Package.resolved`)
 - **Runner:** `macos-15`
 - **Simulator:** iPhone 16, iOS 18.5 (GitHub Actions `macos-15` runner with Xcode 16.4)
 - **Unit + UI tests:** `RickMortyChallenge` scheme

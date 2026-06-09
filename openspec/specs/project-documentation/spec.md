@@ -32,6 +32,11 @@ The `README.md` SHALL accurately document the technology stack, including the Ne
 - **WHEN** a contributor reads the Testing Strategy section
 - **THEN** all four test-related targets are listed: `RickMortyChallengeTests`, `RickMortyChallengeUITests`, `RickMortyChallengeScreenshotTests`, and widget-related unit tests under `RickMortyChallengeTests/Widget/` and `RickMortyChallengeTests/Storage/`
 
+#### Scenario: CI trigger policy is documented
+
+- **WHEN** a contributor reads the CI/CD section of `README.md`
+- **THEN** it states the **iOS Tests** workflow runs on pull requests only and does not run on pushes to `main` after merge
+
 ### Requirement: Architecture diagram is simple and accurate
 
 The `RickMortyArchitecture.drawio` file SHALL present a simplified Clean Architecture overview readable at a glance, showing four layers (Presentation, Domain, Data, Core), the widget extension, external dependencies (Rick & Morty API, Network SPM, App Group), and key components per layer without per-class dependency wiring.
