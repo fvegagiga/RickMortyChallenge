@@ -20,13 +20,13 @@ jobs:
       - name: Run Unit + UI Tests
         run: |
           xcodebuild test \
-            -project "RickMortyPersistImage.xcodeproj" \
-            -scheme "RickMortyPersistImage" \
+            -project "RickMortyChallenge.xcodeproj" \
+            -scheme "RickMortyChallenge" \
             -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"
 
       - name: Run Screenshot Regression Tests
         run: |
           xcodebuild test \
-            -project "RickMortyPersistImage.xcodeproj" \
-            -scheme "RickMortyPersistImageScreenshotTests" \
+            -project "RickMortyChallenge.xcodeproj" \
+            -scheme "RickMortyChallengeScreenshotTests" \
             -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"

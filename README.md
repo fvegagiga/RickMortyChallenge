@@ -67,7 +67,7 @@ A production-quality iOS application built for a **Senior iOS Developer** techni
 ## Project Structure
 
 ```
-RickMortyPersistImage/
+RickMortyChallenge/
 ├── Core/
 │   ├── DI/
 │   │   └── DIContainer.swift          # Dependency graph
@@ -149,7 +149,7 @@ RickMortyPersistImage/
         └── ViewModels/
             └── EpisodesListViewModel.swift
 
-RickMortyPersistImageTests/
+RickMortyChallengeTests/
 ├── Mocks/
 │   ├── MockDataFactory.swift
 │   ├── MockCharacterRepository.swift
@@ -167,7 +167,7 @@ RickMortyPersistImageTests/
 └── Repositories/
     └── CharacterRepositoryTests.swift
 
-RickMortyPersistImageUITests/
+RickMortyChallengeUITests/
 ├── CharactersListUITests.swift
 └── NavigationUITests.swift
 ```
@@ -241,7 +241,7 @@ Tests verify **observable behaviour** (state changes, call counts, error propaga
 
 ### Screenshot Regression Tests
 
-The project includes a dedicated test target: `RickMortyPersistImageScreenshotTests`.
+The project includes a dedicated test target: `RickMortyChallengeScreenshotTests`.
 
 - Fixed simulator profile: `iPhone 16` (`OS 18.4`)
 - Fixed rendering environment: light mode, `en_US_POSIX`, medium content size, left-to-right layout
@@ -251,15 +251,15 @@ The project includes a dedicated test target: `RickMortyPersistImageScreenshotTe
   - Locations list (`content`, `loading`, `empty`, `error`)
   - Episodes list (`content`, `loading`, `empty`, `error`)
 
-Baselines are stored in `RickMortyPersistImageScreenshotTests/snapshots/`.
+Baselines are stored in `RickMortyChallengeScreenshotTests/snapshots/`.
 
 To refresh baselines after intentional UI changes:
 
-1. Temporarily set `RECORD_SNAPSHOTS` to `1` in the `RickMortyPersistImageScreenshotTests` scheme.
-2. Run `xcodebuild test -project "RickMortyPersistImage.xcodeproj" -scheme "RickMortyPersistImageScreenshotTests" -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"`
+1. Temporarily set `RECORD_SNAPSHOTS` to `1` in the `RickMortyChallengeScreenshotTests` scheme.
+2. Run `xcodebuild test -project "RickMortyChallenge.xcodeproj" -scheme "RickMortyChallengeScreenshotTests" -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"`
 3. Set `RECORD_SNAPSHOTS` back to `0` in the scheme.
 4. Run the same command again to verify the refreshed baselines.
-5. Review updated PNG files in `RickMortyPersistImageScreenshotTests/snapshots/`
+5. Review updated PNG files in `RickMortyChallengeScreenshotTests/snapshots/`
 6. Commit the baseline PNG updates together with the UI change
 
 ---
@@ -279,12 +279,12 @@ To refresh baselines after intentional UI changes:
 
 ## Running the Project
 
-1. Open `RickMortyPersistImage.xcodeproj` in Xcode
+1. Open `RickMortyChallenge.xcodeproj` in Xcode
 2. Select a simulator (iPhone 16 or later recommended)
 3. Press `⌘R` to run
 4. Press `⌘U` to run all unit tests
-5. For UI tests, select the `RickMortyPersistImageUITests` scheme and press `⌘U`
-6. For screenshot tests, select the `RickMortyPersistImageScreenshotTests` scheme and press `⌘U`
+5. For UI tests, select the `RickMortyChallengeUITests` scheme and press `⌘U`
+6. For screenshot tests, select the `RickMortyChallengeScreenshotTests` scheme and press `⌘U`
 
 ---
 
@@ -309,12 +309,12 @@ The app includes a **Character Navigation Widget** (iOS 17+) that displays Rick 
 
 The widget requires manual Xcode project configuration before building:
 
-1. Add App Group `group.com.fvg0902iosdev.RickMortyPersistImage.widget` to the main app target
+1. Add App Group `group.com.fvg0902iosdev.RickMortyChallenge.widget` to the main app target
 2. Create a new **Widget Extension** target named `CharacterWidgetExtension`
 3. Add the same App Group to the widget extension target
-4. Add `RickMortyPersistImage/Core/Storage/CharacterWidgetData.swift` to both targets
+4. Add `RickMortyChallenge/Core/Storage/CharacterWidgetData.swift` to both targets
 5. Add all files in `CharacterWidgetExtension/` to the widget extension target
-6. Add `RickMortyPersistImage/Core/Storage/AppGroupStore.swift` to the main app target only
+6. Add `RickMortyChallenge/Core/Storage/AppGroupStore.swift` to the main app target only
 
 ---
 

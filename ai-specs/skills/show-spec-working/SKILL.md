@@ -65,7 +65,7 @@ Run this path when modality is `presentation` or `mixed`.
 1. Build the app for the iOS Simulator:
    ```bash
    xcodebuild build \
-     -scheme RickMortyPersistImage \
+     -scheme RickMortyChallenge \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
      | xcpretty
    ```
@@ -102,9 +102,9 @@ Run this path when modality is `domain-data` or `mixed`.
 1. Run the targeted unit tests for the affected use case or repository:
    ```bash
    xcodebuild test \
-     -scheme RickMortyPersistImage \
+     -scheme RickMortyChallenge \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
-     -only-testing:RickMortyPersistImageTests/<TestClassName> \
+     -only-testing:RickMortyChallengeTests/<TestClassName> \
      | xcpretty
    ```
    Report which tests passed and what they prove about the spec scenario.

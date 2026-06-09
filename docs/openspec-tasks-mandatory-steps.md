@@ -53,9 +53,9 @@ All implementation tasks MUST include these steps in the correct order:
    - Execute focused tests for the modified module(s):
      ```bash
      xcodebuild test \
-       -scheme RickMortyPersistImage \
+       -scheme RickMortyChallenge \
        -destination 'platform=iOS Simulator,name=iPhone 16' \
-       -only-testing:RickMortyPersistImageTests/[TestClassName] \
+       -only-testing:RickMortyChallengeTests/[TestClassName] \
        | xcpretty
      ```
    - Confirm failures are resolved and no new regressions appear in targeted scope
@@ -64,7 +64,7 @@ All implementation tasks MUST include these steps in the correct order:
    - Execute the complete test suite:
      ```bash
      xcodebuild test \
-       -scheme RickMortyPersistImage \
+       -scheme RickMortyChallenge \
        -destination 'platform=iOS Simulator,name=iPhone 16' \
        | xcpretty
      ```
@@ -127,7 +127,7 @@ All implementation tasks MUST include these steps in the correct order:
 1. **Build the App**:
    ```bash
    xcodebuild build \
-     -scheme RickMortyPersistImage \
+     -scheme RickMortyChallenge \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
      | xcpretty
    ```
@@ -196,18 +196,18 @@ All implementation tasks MUST include these steps in the correct order:
 2. **Run Targeted XCUITests**:
    ```bash
    xcodebuild test \
-     -scheme RickMortyPersistImage \
+     -scheme RickMortyChallenge \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
-     -only-testing:RickMortyPersistImageUITests/[TestClassName] \
+     -only-testing:RickMortyChallengeUITests/[TestClassName] \
      | xcpretty
    ```
 
 3. **Run Full UI Test Suite**:
    ```bash
    xcodebuild test \
-     -scheme RickMortyPersistImage \
+     -scheme RickMortyChallenge \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
-     -testPlan RickMortyPersistImageTests \
+     -testPlan RickMortyChallengeTests \
      | xcpretty
    ```
 

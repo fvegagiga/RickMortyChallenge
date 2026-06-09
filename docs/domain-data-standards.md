@@ -1,6 +1,6 @@
 ---
 description: iOS Data and Domain layer standards, best practices, and conventions for Swift/SwiftUI projects using Clean Architecture — including repository pattern, use cases, networking, dependency injection, and testing practices.
-globs: ["RickMortyPersistImage/**/*.swift", "RickMortyPersistImageTests/**/*.swift", "packages/**/*.swift"]
+globs: ["RickMortyChallenge/**/*.swift", "RickMortyChallengeTests/**/*.swift", "packages/**/*.swift"]
 alwaysApply: true
 ---
 
@@ -74,7 +74,7 @@ This document defines standards for the Data and Domain layers of iOS Swift/Swif
 ### Project Structure
 
 ```
-RickMortyPersistImage/
+RickMortyChallenge/
 ├── Core/
 │   ├── DI/
 │   │   └── DIContainer.swift          # Central dependency container
@@ -331,7 +331,7 @@ Image caching is centralized in `ImageCacheManager`. Views use `CachedAsyncImage
 
 `AppGroupStore` (`Core/Storage/AppGroupStore.swift`) is the single point of access for sharing data between the main app and the WidgetKit extension via an App Group container.
 
-App Group identifier: `group.com.fvg0902iosdev.RickMortyPersistImage.widget`
+App Group identifier: `group.com.fvg0902iosdev.RickMortyChallenge.widget`
 
 **Responsibilities:**
 - Write/read a `[CharacterWidgetData]` snapshot to `UserDefaults(suiteName:)` under key `widget.characters`
@@ -410,7 +410,7 @@ enum NetworkError: Error, LocalizedError {
 
 ### Unit Tests
 
-All Domain and Data layer code must have unit tests. Test files live in `RickMortyPersistImageTests/` mirroring the source structure.
+All Domain and Data layer code must have unit tests. Test files live in `RickMortyChallengeTests/` mirroring the source structure.
 
 ```swift
 @MainActor
@@ -454,7 +454,7 @@ final class CharactersListViewModelTests: XCTestCase {
 
 ### Mocks
 
-- Mocks live in `RickMortyPersistImageTests/Mocks/`
+- Mocks live in `RickMortyChallengeTests/Mocks/`
 - Each repository protocol has a corresponding `Mock[Name]Repository`
 - Mocks expose `Result`-typed properties to configure success/failure per test
 - Mocks track call counts and last parameters to verify interaction

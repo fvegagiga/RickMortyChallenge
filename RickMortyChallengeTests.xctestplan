@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "B177FABF-3C10-402B-8410-CE191865D4AD",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:RickMortyChallenge.xcodeproj",
+        "identifier" : "C6BE920C2FC34CDA0077BC27",
+        "name" : "RickMortyChallengeTests"
+      }
+    }
+  ],
+  "version" : 1
+}

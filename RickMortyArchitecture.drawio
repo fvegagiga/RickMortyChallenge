@@ -79,7 +79,7 @@
         <mxCell id="bg_domain" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D6B656;fontSize=13;fontColor=#7F4A00;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;arcSize=2;" value="&lt;b&gt;● Domain&lt;/b&gt;" vertex="1">
           <mxGeometry height="510" width="1860" x="20" y="810" as="geometry" />
         </mxCell>
-        <mxCell id="app_entry" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9673A6;strokeColor=#7A5EA6;fontColor=#ffffff;fontStyle=1;fontSize=10;" value="RickMortyPersistImageApp&#xa;&lt;i&gt;@main  (@StateObject)&lt;/i&gt;" vertex="1">
+        <mxCell id="app_entry" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9673A6;strokeColor=#7A5EA6;fontColor=#ffffff;fontStyle=1;fontSize=10;" value="RickMortyChallengeApp&#xa;&lt;i&gt;@main  (@StateObject)&lt;/i&gt;" vertex="1">
           <mxGeometry height="50" width="200" x="40" y="75" as="geometry" />
         </mxCell>
         <mxCell id="di_container" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9673A6;strokeColor=#7A5EA6;fontColor=#ffffff;fontStyle=1;fontSize=10;" value="DIContainer&#xa;&lt;i&gt;@EnvironmentObject&lt;/i&gt;" vertex="1">

@@ -1,6 +1,6 @@
 ---
 description: SwiftUI presentation layer standards, best practices, and conventions for iOS Swift projects — including MVVM, ViewState, design system, navigation, reusable components, and UI testing practices.
-globs: ["RickMortyPersistImage/Presentation/**/*.swift", "RickMortyPersistImage/Core/DesignSystem/**/*.swift", "RickMortyPersistImage/Core/Router/**/*.swift", "RickMortyPersistImageUITests/**/*.swift"]
+globs: ["RickMortyChallenge/Presentation/**/*.swift", "RickMortyChallenge/Core/DesignSystem/**/*.swift", "RickMortyChallenge/Core/Router/**/*.swift", "RickMortyChallengeUITests/**/*.swift"]
 alwaysApply: true
 ---
 
@@ -422,7 +422,7 @@ Prefer `@ViewBuilder` private properties for simple extractions within the same 
 
 ### UI Tests with XCUITest
 
-UI tests live in `RickMortyPersistImageUITests/`. They test real navigation flows against the running app.
+UI tests live in `RickMortyChallengeUITests/`. They test real navigation flows against the running app.
 
 ```swift
 final class CharactersListUITests: XCTestCase {

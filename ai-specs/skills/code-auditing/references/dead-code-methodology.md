@@ -62,7 +62,7 @@ Build the project and review warnings — Swift's compiler flags:
 
 ```bash
 xcodebuild build \
-  -scheme RickMortyPersistImage \
+  -scheme RickMortyChallenge \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   2>&1 | grep "warning:" | grep -i "unused\|never used\|unreachable"
 ```
@@ -84,7 +84,7 @@ For `internal` and `public` symbols (not caught by compiler warnings on `private
 
 ```bash
 # Find all function declarations in Domain/Data layers
-grep -rn "func " RickMortyPersistImage --include="*.swift" \
+grep -rn "func " RickMortyChallenge --include="*.swift" \
   | grep -v "override\|test\|Test\|init\|body\|Preview"
 
 # For each symbol found, check if it is referenced anywhere
@@ -95,7 +95,7 @@ grep -rn "symbolName" . --include="*.swift" | wc -l
 ```bash
 # Find unused struct/class/enum types
 grep -rn "^struct \|^final class \|^class \|^enum " \
-  RickMortyPersistImage --include="*.swift" \
+  RickMortyChallenge --include="*.swift" \
   | awk -F': ' '{print $2}' | awk '{print $2}'
 # Then grep each name to check reference count
 ```
@@ -122,7 +122,7 @@ func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, ...) { ... 
 ```swift
 // App entry point — never "called" from Swift code directly
 @main
-struct RickMortyPersistImageApp: App { ... }
+struct RickMortyChallengeApp: App { ... }
 ```
 
 #### 4. SwiftUI `body` and View Modifiers
@@ -179,7 +179,7 @@ For each flagged item, the agent MUST:
 
 ```bash
 # Step 1: compiler warnings
-xcodebuild build -scheme RickMortyPersistImage \
+xcodebuild build -scheme RickMortyChallenge \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   2>&1 | grep "warning:" | grep -i "unused\|unreachable" | sort -u
 

@@ -17,13 +17,13 @@ Run existing linting and testing to establish a baseline before the audit:
 ```bash
 # Build — check for compiler errors and warnings
 xcodebuild build \
-  -scheme RickMortyPersistImage \
+  -scheme RickMortyChallenge \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   | xcpretty
 
 # Run all tests
 xcodebuild test \
-  -scheme RickMortyPersistImage \
+  -scheme RickMortyChallenge \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   | xcpretty
 
@@ -51,10 +51,10 @@ find . -name "*.swift" \
   -not -path "*/.build/*"
 
 # Group by Clean Architecture layer
-find RickMortyPersistImage/Domain -name "*.swift"
-find RickMortyPersistImage/Data -name "*.swift"
-find RickMortyPersistImage/Core -name "*.swift"
-find RickMortyPersistImage/Presentation -name "*.swift"
+find RickMortyChallenge/Domain -name "*.swift"
+find RickMortyChallenge/Data -name "*.swift"
+find RickMortyChallenge/Core -name "*.swift"
+find RickMortyChallenge/Presentation -name "*.swift"
 ```
 
 ### Organization
@@ -159,14 +159,14 @@ Verify that the dependency rule is respected across layers:
 ### Dependency Rule Checks
 ```bash
 # Domain layer must NOT import Data, Core infrastructure, or UI frameworks
-grep -rn "^import" RickMortyPersistImage/Domain --include="*.swift" \
+grep -rn "^import" RickMortyChallenge/Domain --include="*.swift" \
   | grep -v "Foundation\|XCTest"
 
 # Data layer should only import Domain + networking
-grep -rn "^import SwiftUI" RickMortyPersistImage/Data --include="*.swift"
+grep -rn "^import SwiftUI" RickMortyChallenge/Data --include="*.swift"
 
 # Presentation layer must not directly call network services
-grep -rn "NetworkService\|URLSession" RickMortyPersistImage/Presentation --include="*.swift"
+grep -rn "NetworkService\|URLSession" RickMortyChallenge/Presentation --include="*.swift"
 ```
 
 ### Protocol vs Concrete Dependency
@@ -283,7 +283,7 @@ Prioritized steps with:
 Each issue should include:
 ```markdown
 ### [PRIORITY] Issue Title
-**Location:** `RickMortyPersistImage/Data/Repositories/CharacterRepositoryImpl.swift:42`
+**Location:** `RickMortyChallenge/Data/Repositories/CharacterRepositoryImpl.swift:42`
 
 **Problem:**
 Description of the issue and why it matters.
