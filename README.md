@@ -1,6 +1,6 @@
-# Rick & Morty — iOS Technical Challenge
+# Rick & Morty — iOS App
 
-A production-quality iOS application built for a **Senior iOS Developer** technical interview. Displays characters, locations, and episodes from the [Rick and Morty REST API](https://rickandmortyapi.com/documentation), with image persistence, clean architecture, full testing, and a modern SwiftUI interface.
+A production-quality iOS application that displays characters, locations, and episodes from the [Rick and Morty REST API](https://rickandmortyapi.com/documentation), with image persistence, a home screen widget, clean architecture, full testing, and a modern SwiftUI interface.
 
 ---
 
@@ -12,6 +12,51 @@ A production-quality iOS application built for a **Senior iOS Developer** techni
 
 ---
 
+## Features
+
+### Characters Tab
+
+- **List** — 2-column `LazyVGrid` of character cards with avatar, name, status badge, and species
+- **Search** — `.searchable` by name with 500ms debounce
+- **Detail** — Hero image, status badge, species, status, gender, origin, location, type, and episode count
+- **Pagination** — Infinite scroll via `loadMoreIfNeeded(currentItem:)` on the last item
+- **Pull-to-refresh** — Resets and reloads page 1
+- **States** — `ViewState`: loading, success, empty, error (with retry)
+- **Widget sync** — On successful fetch, writes a shuffled 20-character snapshot to App Group for the home screen widget
+
+### Locations Tab
+
+- **List** — Plain `List` with type-specific SF Symbol icon, name, type, dimension, and resident count
+- **Pagination** — Same `loadMoreIfNeeded` pattern as Characters
+- **Pull-to-refresh** — Yes
+- **States** — Loading, success, empty, error (with retry)
+- No search or detail screen
+
+### Episodes Tab
+
+- **List** — Plain `List` with season-coded episode badge (e.g. `S01`), name, air date, and character count
+- **Pagination** — Same `loadMoreIfNeeded` pattern
+- **Pull-to-refresh** — Yes
+- **States** — Loading, success, empty, error (with retry)
+- No search or detail screen
+
+### Shared UI
+
+- `LoadingView`, `ErrorView` (retry action), `EmptyStateView`
+- `StatusBadgeView` — Alive / Dead / Unknown with color-coded dot
+- `CachedAsyncImageView` — Memory → disk → network image loading
+- `View+Extensions` — `cardStyle()`, `shimmer()` placeholder effect
+
+### Home Screen Widget (iOS 17+)
+
+- **Sizes** — `.systemSmall`, `.systemMedium`
+- **Display** — Character image, name, status indicator (colored dot), index counter (`1 / N`)
+- **Navigation** — Interactive ← / → via `AppIntent` (`PreviousCharacterIntent`, `NextCharacterIntent`)
+- **Data** — Reads character snapshot and images from App Group container written by the main app
+- **Placeholder** — "Open the app to load characters" when App Group is empty
+
+---
+
 ## Tech Stack
 
 | Concern | Solution |
@@ -19,11 +64,14 @@ A production-quality iOS application built for a **Senior iOS Developer** techni
 | Language | Swift 5.9+ |
 | UI | SwiftUI |
 | Architecture | MVVM + Clean Architecture |
-| Concurrency | `async/await` (no Combine) |
+| Concurrency | `async/await` (Combine used only for `ObservableObject` / `@Published`) |
 | Image Persistence | FileManager + NSCache (two-level) |
-| Networking | `URLSession` with protocol abstraction |
-| Minimum Deployment | iOS 16.0 |
+| Networking | [Network SPM](https://github.com/fvegagiga/Network) v1.0.2 (`NetworkService`, `RetryingNetworkService`) |
+| Widget | WidgetKit + App Intents |
+| Data Sharing | App Group (`group.com.fvg0902iosdev.RickMortyChallenge.widget`) |
+| Minimum Deployment | iOS 16.6 |
 | Testing | XCTest (Unit + UI + Screenshot Regression) |
+| CI | GitHub Actions (`.github/workflows/ios-tests.yml`) |
 | DI | Manual constructor injection via `DIContainer` |
 
 ---
@@ -33,7 +81,7 @@ A production-quality iOS application built for a **Senior iOS Developer** techni
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    Presentation Layer                    │
-│  Views  ←→  ViewModels  ←  UseCaseProtocols             │
+│  MainTabView · Views · ViewModels · ViewState<T>        │
 └──────────────────────┬──────────────────────────────────┘
                        │ depends on
 ┌──────────────────────▼──────────────────────────────────┐
@@ -43,24 +91,26 @@ A production-quality iOS application built for a **Senior iOS Developer** techni
                        │ implemented by
 ┌──────────────────────▼──────────────────────────────────┐
 │                       Data Layer                         │
-│  RepositoryImpls · DTOs · Mappers · NetworkService      │
+│  RepositoryImpls · DTOs · Mappers · APIEndpoint         │
 └─────────────────────────────────────────────────────────┘
                    ↑ shared by all
 ┌─────────────────────────────────────────────────────────┐
 │                      Core / Common                       │
-│  DIContainer · AppRouter · DesignSystem · Utilities      │
+│  DIContainer · AppRouter · DesignSystem · Storage        │
 └─────────────────────────────────────────────────────────┘
 ```
+
+For a visual overview, open [`RickMortyArchitecture.drawio`](RickMortyArchitecture.drawio) in [draw.io](https://app.diagrams.net/) (or diagrams.net). The diagram shows the four Clean Architecture layers, external dependencies, and the widget extension at a glance.
 
 ### Layers Explained
 
 **Domain** — Zero external dependencies. Defines `Entities` (pure data models), `RepositoryProtocols` (boundaries), and `UseCases` (one action = one class). This is the innermost ring.
 
-**Data** — Implements the repository protocols. `DTOs` mirror the API JSON exactly; `Mappers` convert them to domain entities. This is the only layer that knows about the network.
+**Data** — Implements the repository protocols. `DTOs` mirror the API JSON exactly; `Mappers` convert them to domain entities. `APIEndpoint` defines REST paths locally; HTTP transport comes from the Network SPM package (`NetworkServiceProtocol`, `RetryingNetworkService`).
 
 **Presentation** — `ViewModels` are `@MainActor ObservableObject` classes that call use cases and expose `ViewState<T>`. Views are pure declarative SwiftUI with zero business logic.
 
-**Core** — Infrastructure shared across layers: `DIContainer`, `AppRouter`, `DesignSystem`, `ImageCacheManager`.
+**Core** — Infrastructure shared across layers: `DIContainer`, `AppRouter` (with `CharacterRoute`), `DesignSystem`, `ImageCacheManager`, and `AppGroupStore` for widget data sharing.
 
 ---
 
@@ -70,14 +120,16 @@ A production-quality iOS application built for a **Senior iOS Developer** techni
 RickMortyChallenge/
 ├── Core/
 │   ├── DI/
-│   │   └── DIContainer.swift          # Dependency graph
+│   │   └── DIContainer.swift          # Dependency graph + ViewModel factories
 │   ├── Router/
-│   │   ├── AppRoute.swift             # Typed navigation enums
-│   │   └── AppRouter.swift            # NavigationPath per tab
+│   │   └── AppRouter.swift            # NavigationPath + CharacterRoute enum
 │   ├── DesignSystem/
 │   │   ├── DSColors.swift             # Semantic color tokens
 │   │   ├── DSTypography.swift         # Font scale
 │   │   └── DSSpacing.swift            # Spacing & radius
+│   ├── Storage/
+│   │   ├── AppGroupStore.swift        # App Group read/write for widget
+│   │   └── CharacterWidgetData.swift  # Shared widget model (app + extension)
 │   ├── Extensions/
 │   │   └── View+Extensions.swift      # cardStyle, shimmer
 │   └── Utilities/
@@ -85,10 +137,7 @@ RickMortyChallenge/
 │
 ├── Data/
 │   ├── Network/
-│   │   ├── NetworkServiceProtocol.swift
-│   │   ├── NetworkService.swift
-│   │   ├── APIEndpoint.swift
-│   │   └── NetworkError.swift
+│   │   └── APIEndpoint.swift          # REST endpoint definitions
 │   ├── DTOs/
 │   │   ├── PaginatedResponseDTO.swift
 │   │   ├── CharacterDTO.swift
@@ -120,7 +169,7 @@ RickMortyChallenge/
 │       └── GetEpisodesUseCase.swift
 │
 └── Presentation/
-    ├── MainTabView.swift
+    ├── MainTabView.swift              # 3-tab root (Characters, Locations, Episodes)
     ├── Components/
     │   ├── ViewState.swift            # idle/loading/success/empty/failure
     │   ├── LoadingView.swift
@@ -149,28 +198,47 @@ RickMortyChallenge/
         └── ViewModels/
             └── EpisodesListViewModel.swift
 
+CharacterWidgetExtension/              # WidgetKit extension (iOS 17+)
+├── CharacterWidget.swift
+├── CharacterWidgetView.swift
+├── CharacterWidgetProvider.swift
+├── NextCharacterIntent.swift
+└── PreviousCharacterIntent.swift
+
 RickMortyChallengeTests/
 ├── Mocks/
 │   ├── MockDataFactory.swift
 │   ├── MockCharacterRepository.swift
 │   ├── MockLocationRepository.swift
 │   ├── MockEpisodeRepository.swift
-│   └── MockNetworkService.swift
+│   ├── MockNetworkService.swift
+│   └── MockAppGroupStore.swift
 ├── UseCases/
 │   ├── GetCharactersUseCaseTests.swift
 │   ├── GetLocationsUseCaseTests.swift
 │   └── GetEpisodesUseCaseTests.swift
 ├── ViewModels/
 │   ├── CharactersListViewModelTests.swift
+│   ├── CharactersListViewModelWidgetTests.swift
 │   ├── CharacterDetailViewModelTests.swift
 │   └── LocationsListViewModelTests.swift
-└── Repositories/
-    └── CharacterRepositoryTests.swift
+├── Repositories/
+│   └── CharacterRepositoryTests.swift
+├── Storage/
+│   └── AppGroupStoreTests.swift
+└── Widget/
+    └── CharacterNavigationIntentTests.swift
 
 RickMortyChallengeUITests/
 ├── CharactersListUITests.swift
 └── NavigationUITests.swift
+
+RickMortyChallengeScreenshotTests/
+├── ScreenshotRegressionTests.swift
+└── snapshots/                         # 15 baseline PNGs
 ```
+
+**External dependency:** [Network SPM](https://github.com/fvegagiga/Network) — provides `NetworkServiceProtocol`, `NetworkService`, `RetryingNetworkService`, `Endpoint`, `NetworkError`.
 
 ---
 
@@ -178,7 +246,7 @@ RickMortyChallengeUITests/
 
 ### 1. Protocol-First Dependency Inversion
 Every cross-layer dependency is expressed as a protocol, never as a concrete type:
-- `NetworkServiceProtocol` — the Data layer never touches `URLSession` directly from other layers
+- `NetworkServiceProtocol` (Network SPM) — only the Data layer talks to the network
 - `CharacterRepositoryProtocol` — Domain defines the interface; Data implements it
 - `GetCharactersUseCaseProtocol` — ViewModels depend on the protocol, enabling fast mock injection in tests
 
@@ -216,6 +284,9 @@ ViewModels expose `loadMoreIfNeeded(currentItem:)`. The view calls this inside `
 ### 7. SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor
 The project has this build flag enabled, meaning all types are implicitly `@MainActor`. ViewModels explicitly annotate `@MainActor` for clarity and documentation. Async URLSession calls suspend the actor without blocking the main thread.
 
+### 8. App Group for Widget Data Sharing
+`AppGroupStore` writes a JSON-encoded character snapshot and pre-downloaded images to the shared App Group container. The widget extension reads from the same container, enabling offline widget display without opening the app.
+
 ---
 
 ## Testing Strategy
@@ -227,8 +298,12 @@ Tests verify **observable behaviour** (state changes, call counts, error propaga
 | Layer | What is tested |
 |---|---|
 | **Use Cases** | Delegates correctly to repository, propagates errors |
-| **ViewModels** | State transitions (idle→loading→success/empty/failure), pagination, refresh, debounce idempotency |
+| **ViewModels** | State transitions (idle→loading→success/empty/failure), pagination, refresh, widget snapshot writes |
 | **Repositories** | Maps DTOs to entities, sets `hasNextPage` correctly, propagates network errors |
+| **Storage** | App Group snapshot write/read, index persistence, image URL resolution |
+| **Widget** | Next/previous index math and wrap-around via App Intents |
+
+**Known gaps (no tests yet):** `GetCharacterDetailUseCase`, `EpisodesListViewModel`, `LocationRepositoryImpl`, `EpisodeRepositoryImpl`, search debounce timing.
 
 ### UI Tests — Golden Path + Navigation
 
@@ -261,6 +336,17 @@ To refresh baselines after intentional UI changes:
 4. Run the same command again to verify the refreshed baselines.
 5. Review updated PNG files in `RickMortyChallengeScreenshotTests/snapshots/`
 6. Commit the baseline PNG updates together with the UI change
+
+---
+
+## CI/CD
+
+GitHub Actions workflow (`.github/workflows/ios-tests.yml`) runs on every push to `main` and on pull requests:
+
+- **Runner:** `macos-15`
+- **Simulator:** iPhone 16, iOS 18.4
+- **Unit + UI tests:** `RickMortyChallenge` scheme
+- **Screenshot regression:** `RickMortyChallengeScreenshotTests` scheme
 
 ---
 
@@ -304,20 +390,21 @@ The app includes a **Character Navigation Widget** (iOS 17+) that displays Rick 
 - The widget is populated automatically the first time you open the app and load the Characters tab
 - Each app launch refreshes the widget with a new random selection of 20 characters
 - Tap ← / → to cycle through characters without opening the app
+- Character images are pre-downloaded to the App Group container for fast widget rendering
 
-### Xcode Setup (for contributors)
+### Xcode Targets (for contributors)
 
-The widget requires manual Xcode project configuration before building:
+The widget extension is already configured in the Xcode project:
 
-1. Add App Group `group.com.fvg0902iosdev.RickMortyChallenge.widget` to the main app target
-2. Create a new **Widget Extension** target named `CharacterWidgetExtension`
-3. Add the same App Group to the widget extension target
-4. Add `RickMortyChallenge/Core/Storage/CharacterWidgetData.swift` to both targets
-5. Add all files in `CharacterWidgetExtension/` to the widget extension target
-6. Add `RickMortyChallenge/Core/Storage/AppGroupStore.swift` to the main app target only
+| Target | Bundle ID |
+|---|---|
+| `RickMortyChallenge` | `com.fvg0902iosdev.RickMortyChallenge` |
+| `CharacterWidgetExtensionExtension` | `com.fvg0902iosdev.RickMortyChallenge.CharacterWidgetExtension` |
+
+Both targets share App Group `group.com.fvg0902iosdev.RickMortyChallenge.widget`. Source files live in `CharacterWidgetExtension/` and `RickMortyChallenge/Core/Storage/`.
 
 ---
 
 ## Author
 
-Fernando Vega — Senior iOS Developer  
+Fernando Vega — Senior iOS Developer
