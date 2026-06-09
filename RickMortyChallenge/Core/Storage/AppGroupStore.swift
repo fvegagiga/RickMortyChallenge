@@ -60,7 +60,8 @@ final class AppGroupStore: AppGroupStoreProtocol {
     // MARK: - Image Storage
 
     func imageURL(for characterId: Int) -> URL? {
-        imageContainerURL()?.appendingPathComponent("\(characterId).jpg")
+        guard defaults != nil else { return nil }
+        return imageContainerURL()?.appendingPathComponent("\(characterId).jpg")
     }
 
     func downloadImages(for characters: [CharacterWidgetData]) async {

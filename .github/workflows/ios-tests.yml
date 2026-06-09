@@ -22,11 +22,11 @@ jobs:
           xcodebuild test \
             -project "RickMortyChallenge.xcodeproj" \
             -scheme "RickMortyChallenge" \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"
 
       - name: Run Screenshot Regression Tests
         run: |
           xcodebuild test \
             -project "RickMortyChallenge.xcodeproj" \
             -scheme "RickMortyChallengeScreenshotTests" \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.4"
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"
