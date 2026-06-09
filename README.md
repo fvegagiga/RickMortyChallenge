@@ -316,9 +316,9 @@ Tests verify **observable behaviour** (state changes, call counts, error propaga
 
 ### Screenshot Regression Tests
 
-The project includes a dedicated test target: `RickMortyChallengeScreenshotTests`.
+The project includes a dedicated test target: `RickMortyChallengeScreenshotTests`, backed by a **versioned local Swift package** at `Packages/SnapshotTestKit/`. The package provides snapshot assertion helpers and must remain tracked in git (see `.gitignore` exception for `Packages/SnapshotTestKit/`).
 
-- Fixed simulator profile: `iPhone 16` (`OS 18.4`)
+- Fixed simulator profile: `iPhone 16` (`OS 18.5` on CI; `18.4` or later locally)
 - Fixed rendering environment: light mode, `en_US_POSIX`, medium content size, left-to-right layout
 - Covered screen entry points:
   - Characters list (`content`, `loading`, `empty`, `error`)
@@ -344,9 +344,11 @@ To refresh baselines after intentional UI changes:
 GitHub Actions workflow (`.github/workflows/ios-tests.yml`) runs on every push to `main` and on pull requests:
 
 - **Runner:** `macos-15`
-- **Simulator:** iPhone 16, iOS 18.4
+- **Simulator:** iPhone 16, iOS 18.5 (GitHub Actions `macos-15` runner with Xcode 16.4)
 - **Unit + UI tests:** `RickMortyChallenge` scheme
-- **Screenshot regression:** `RickMortyChallengeScreenshotTests` scheme
+- **Screenshot regression:** `RickMortyChallengeScreenshotTests` scheme (depends on local `Packages/SnapshotTestKit`)
+
+**Local packages:** The `Packages/` directory is gitignored by default. Any local Swift package referenced by the Xcode project must be explicitly allow-listed in `.gitignore` (currently `Packages/SnapshotTestKit/`).
 
 ---
 

@@ -4,6 +4,7 @@ import Network
 
 /// Central dependency container. Created once at app startup and passed via @EnvironmentObject.
 /// Factories return new ViewModel instances so each screen owns its own state.
+@MainActor
 final class DIContainer: ObservableObject {
 
     // MARK: - Infrastructure

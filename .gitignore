@@ -24,7 +24,12 @@ xcuserdata/
 
 # Swift Package Manager
 .build/
-Packages/
+Packages/*
+!Packages/SnapshotTestKit/
+!Packages/SnapshotTestKit/**
+Packages/**/.build/
+Packages/**/.swiftpm/
+**/.DS_Store
 
 # CocoaPods
 Pods/
