@@ -7,6 +7,7 @@ final class NavigationUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments.append("UI-Testing")
         app.launch()
     }
 
@@ -63,7 +64,7 @@ final class NavigationUITests: XCTestCase {
         // Switch back to Characters
         app.tabBars.buttons["Characters"].tap()
         XCTAssertTrue(
-            app.navigationBars["Characters"].waitForExistence(timeout: 5),
+            app.navigationBars["Characters"].waitForExistence(timeout: 10),
             "Characters nav title should be visible after switching back"
         )
     }

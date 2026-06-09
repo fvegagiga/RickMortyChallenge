@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct RickMortyChallengeApp: App {
-    @StateObject private var container = DIContainer()
+    @StateObject private var container = RickMortyChallengeApp.makeContainer()
     @StateObject private var router    = AppRouter()
 
     var body: some Scene {
@@ -15,5 +15,12 @@ struct RickMortyChallengeApp: App {
                     .environmentObject(router)
             }
         }
+    }
+
+    private static func makeContainer() -> DIContainer {
+        if UITestLaunchConfiguration.isEnabled {
+            return DIContainer(networkService: UITestNetworkService())
+        }
+        return DIContainer()
     }
 }

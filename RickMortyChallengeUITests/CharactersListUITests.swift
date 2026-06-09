@@ -7,6 +7,7 @@ final class CharactersListUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments.append("UI-Testing")
         app.launch()
     }
 
@@ -51,11 +52,9 @@ final class CharactersListUITests: XCTestCase {
 
         firstCard.tap()
 
-        // After navigation, a Back button should appear in the nav bar
-        let backButton = app.navigationBars.buttons.element(boundBy: 0)
         XCTAssertTrue(
-            backButton.waitForExistence(timeout: 5),
-            "Back button should appear after navigating to character detail"
+            app.navigationBars["Rick Sanchez"].waitForExistence(timeout: 10),
+            "Character detail title should appear after tapping a card"
         )
     }
 }

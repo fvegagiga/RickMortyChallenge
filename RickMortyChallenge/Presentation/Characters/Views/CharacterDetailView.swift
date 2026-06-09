@@ -31,6 +31,7 @@ struct CharacterDetailView: View {
         }
         .task { await viewModel.loadDetail() }
         .navigationBarTitleDisplayMode(.inline)
+        .accessibilityIdentifier("character-detail")
     }
 }
 
