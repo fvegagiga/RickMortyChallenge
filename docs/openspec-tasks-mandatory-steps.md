@@ -28,9 +28,15 @@ All implementation tasks MUST include these steps in the correct order:
 
 - **Step N**: Review and Update Existing Unit Tests (MANDATORY)
 - **Step N+1**: Run Unit Tests with xcodebuild (MANDATORY) — **AGENT MUST EXECUTE**
-- **Step N+2**: Manual Simulator Verification (MANDATORY) — **AGENT MUST EXECUTE** if app can be built and run
-- **Step N+3**: XCUITest Automated UI Tests (MANDATORY if applicable) — **AGENT MUST EXECUTE**
+- **Step N+2**: Manual Simulator Verification (CONDITIONAL — only when the change affects the UI/Presentation layer or user-visible behaviour) — **AGENT MUST EXECUTE** when applicable
+- **Step N+3**: XCUITest Automated UI Tests (CONDITIONAL — only when user-facing flows are added or changed) — **AGENT MUST EXECUTE** when applicable
 - **Step N+4**: Update Technical Documentation (MANDATORY)
+
+> **Applicability rule**: Steps N+1 (unit tests) and N+4 (documentation) are always required.
+> Steps N+2 (simulator) and N+3 (XCUITest) apply **only** when there are UI/Presentation changes
+> or user-visible behaviour changes. For Domain/Data-only changes, library targets, or projects
+> without a runnable UI, **skip** N+2/N+3 and record a one-line rationale in `tasks.md`
+> (e.g., "N+2/N+3 skipped: Domain-only change, no UI affected").
 
 ## 3. Manual Testing Requirements — CRITICAL: Agent Must Execute
 
@@ -53,9 +59,9 @@ All implementation tasks MUST include these steps in the correct order:
    - Execute focused tests for the modified module(s):
      ```bash
      xcodebuild test \
-       -scheme RickMortyChallenge \
+       -scheme <AppName> \
        -destination 'platform=iOS Simulator,name=iPhone 16' \
-       -only-testing:RickMortyChallengeTests/[TestClassName] \
+       -only-testing:<AppName>Tests/[TestClassName] \
        | xcpretty
      ```
    - Confirm failures are resolved and no new regressions appear in targeted scope
@@ -64,7 +70,7 @@ All implementation tasks MUST include these steps in the correct order:
    - Execute the complete test suite:
      ```bash
      xcodebuild test \
-       -scheme RickMortyChallenge \
+       -scheme <AppName> \
        -destination 'platform=iOS Simulator,name=iPhone 16' \
        | xcpretty
      ```
@@ -113,21 +119,26 @@ All implementation tasks MUST include these steps in the correct order:
 
 ---
 
-### Step N+2: Manual Simulator Verification (MANDATORY)
+### Step N+2: Manual Simulator Verification (CONDITIONAL — UI changes only)
 
-**Agent Responsibility**: The coding agent MUST build and run the app on the iOS Simulator, navigate to the affected feature, and verify the expected behaviour visually. This is NOT optional and cannot be delegated to the user.
+**Agent Responsibility**: When this step applies, the coding agent MUST build and run the app on the iOS Simulator, navigate to the affected feature, and verify the expected behaviour visually. When it applies, it cannot be delegated to the user.
 
 **When This Applies**:
 - Any change that affects the Presentation layer (ViewModels, Views, Components)
 - Any change that affects data displayed to the user (new fields, formatting, pagination)
 - Navigation changes (new routes, tab changes)
 
+**When to Skip** (record the rationale in `tasks.md`):
+- Domain/Data-only changes with no user-visible effect
+- Library/framework targets or packages without a runnable app
+- Environments where the simulator cannot run (document what was verified via unit tests instead)
+
 **Implementation Steps** (Agent must perform):
 
 1. **Build the App**:
    ```bash
    xcodebuild build \
-     -scheme RickMortyChallenge \
+     -scheme <AppName> \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
      | xcpretty
    ```
@@ -150,6 +161,7 @@ All implementation tasks MUST include these steps in the correct order:
    - Confirm data loads correctly (correct fields, formatting, images)
    - Confirm pagination triggers when scrolling to the end of a list
    - Confirm search/filter updates results correctly
+   - Example critical path: `<feature> list → <feature> detail`, tab navigation
 
 4. **Verify Error and Empty States**:
    - If testable, simulate network failure and verify `ErrorView` appears with retry
@@ -177,14 +189,18 @@ All implementation tasks MUST include these steps in the correct order:
 
 ---
 
-### Step N+3: XCUITest Automated UI Tests (MANDATORY if applicable)
+### Step N+3: XCUITest Automated UI Tests (CONDITIONAL — user-facing flows only)
 
-**Agent Responsibility**: The coding agent MUST execute XCUITest UI tests for affected user flows. This is NOT optional and cannot be delegated to the user.
+**Agent Responsibility**: When this step applies, the coding agent MUST execute XCUITest UI tests for affected user flows. When it applies, it cannot be delegated to the user.
 
 **When This Applies**:
 - New screens or navigation flows added to the Presentation layer
 - Changes to existing user-facing interactions (buttons, forms, gestures)
-- Any change that affects the critical path (characters list → character detail, tab navigation)
+- Any change that affects the critical path (`<feature>` list → `<feature>` detail, tab navigation)
+
+**When to Skip** (record the rationale in `tasks.md`):
+- Domain/Data-only changes, or UI changes with no flow/interaction impact
+- Projects/targets without a UI test target or a runnable UI
 
 **Implementation Steps** (Agent must perform):
 
@@ -196,25 +212,25 @@ All implementation tasks MUST include these steps in the correct order:
 2. **Run Targeted XCUITests**:
    ```bash
    xcodebuild test \
-     -scheme RickMortyChallenge \
+     -scheme <AppName> \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
-     -only-testing:RickMortyChallengeUITests/[TestClassName] \
+     -only-testing:<AppName>UITests/[TestClassName] \
      | xcpretty
    ```
 
 3. **Run Full UI Test Suite**:
    ```bash
    xcodebuild test \
-     -scheme RickMortyChallenge \
+     -scheme <AppName> \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
-     -testPlan RickMortyChallengeTests \
+     -testPlan <AppName>Tests \
      | xcpretty
    ```
 
 4. **Test User Workflows**:
-   - Characters list loads and displays items
-   - Tapping a character navigates to the detail screen
-   - Tab navigation between Characters, Episodes, Locations
+   - `<feature>` list loads and displays items
+   - Tapping an item navigates to the detail screen
+   - Tab navigation between `<FeatureA>`, `<FeatureB>`, `<FeatureC>`
    - Pull-to-refresh triggers a reload
    - Search filters the list correctly
 
@@ -255,49 +271,49 @@ Before finalising any `tasks.md` file, verify:
 ## 5. When This Applies
 
 This rule applies when:
-- Creating `tasks.md` via `/opsx:ff` (fast-forward) or `openspec-ff-change` skill
-- Creating `tasks.md` via `/opsx:continue` (continue change) or `openspec-continue-change` skill
+- Creating `tasks.md` via `/opsx:ff` (fast-forward) or `/opsx:propose`
+- Creating `tasks.md` via `/opsx:continue` (step-by-step artifact creation)
 - Updating existing `tasks.md` files
-- Implementing tasks from `tasks.md` via `/opsx:apply` or `openspec-apply-change` skill — the agent must execute manual tests
+- Implementing tasks from `tasks.md` via `/opsx:apply` — the agent must execute manual tests
 
 ## 6. Example Structure
 
 ```markdown
 ## 0. Setup: Create Feature Branch (MANDATORY — FIRST STEP)
 
-- [ ] 0.1 Create feature branch `feature/episode-detail` from main branch
+- [ ] 0.1 Create feature branch `feature/<feature>-detail` from main branch
 - [ ] 0.2 Verify branch creation and current branch status
 
-## 1. Domain: EpisodeDetailEntity and Use Case (TDD)
+## 1. Domain: <Entity>DetailEntity and Use Case (TDD)
 
-- [ ] 1.1 Write failing test for GetEpisodeDetailUseCase
+- [ ] 1.1 Write failing test for Get<Entity>DetailUseCase
 - [ ] 1.2 Add entity fields and use case protocol
 - [ ] 1.3 Implement use case to make tests pass
 
 ## 2. Data: DTO, Mapper, Repository
 
-- [ ] 2.1 Add EpisodeDetailDTO
-- [ ] 2.2 Update EpisodeMapper
-- [ ] 2.3 Add fetchEpisodeDetail to EpisodeRepositoryImpl
-- [ ] 2.4 Add APIEndpoint.episodeDetail case
+- [ ] 2.1 Add <Entity>DetailDTO
+- [ ] 2.2 Update <Entity>Mapper
+- [ ] 2.3 Add fetch<Entity>Detail to <Entity>RepositoryImpl
+- [ ] 2.4 Add APIEndpoint.<entity>Detail case
 
 ## 3. Presentation: ViewModel and Views
 
-- [ ] 3.1 Implement EpisodeDetailViewModel with ViewState
-- [ ] 3.2 Create EpisodeDetailView with exhaustive ViewState switch
-- [ ] 3.3 Add EpisodeRoute.detail case to AppRouter
-- [ ] 3.4 Register navigationDestination in EpisodesListView
+- [ ] 3.1 Implement <Feature>DetailViewModel with ViewState
+- [ ] 3.2 Create <Feature>DetailView with exhaustive ViewState switch
+- [ ] 3.3 Add <Feature>Route.detail case to AppRouter
+- [ ] 3.4 Register navigationDestination in <Feature>ListView
 - [ ] 3.5 Add #Preview macros for all states
 
 ## 4. Core: Wire into DIContainer
 
-- [ ] 4.1 Add makeEpisodeDetailViewModel factory to DIContainer
+- [ ] 4.1 Add make<Feature>DetailViewModel factory to DIContainer
 
 ## 5. Review and Update Existing Unit Tests (MANDATORY)
 
 - [ ] 5.1 Review existing tests for regressions
 - [ ] 5.2 Update MockDataFactory if new fields are needed
-- [ ] 5.3 Update MockEpisodeRepository with new method
+- [ ] 5.3 Update Mock<Entity>Repository with new method
 
 ## 6. Run Unit Tests with xcodebuild (MANDATORY — AGENT MUST EXECUTE)
 
@@ -309,15 +325,15 @@ This rule applies when:
 ## 7. Manual Simulator Verification (MANDATORY — AGENT MUST EXECUTE)
 
 - [ ] 7.1 Build app for simulator — verify zero errors
-- [ ] 7.2 Navigate to Episodes tab and tap an episode
-- [ ] 7.3 Verify EpisodeDetailView renders all fields correctly
-- [ ] 7.4 Verify back navigation returns to Episodes list
+- [ ] 7.2 Navigate to <Feature> tab and tap an item
+- [ ] 7.3 Verify <Feature>DetailView renders all fields correctly
+- [ ] 7.4 Verify back navigation returns to <Feature> list
 - [ ] 7.5 Create report `specs/<change-name>/reports/YYYY-MM-DD-step-7-simulator-verification.md`
 
 ## 8. XCUITest Automated UI Tests (MANDATORY — AGENT MUST EXECUTE)
 
-- [ ] 8.1 Run targeted XCUITests for Episodes flow
-- [ ] 8.2 Verify episode detail navigation test passes
+- [ ] 8.1 Run targeted XCUITests for <Feature> flow
+- [ ] 8.2 Verify <feature> detail navigation test passes
 - [ ] 8.3 Create report `specs/<change-name>/reports/YYYY-MM-DD-step-8-xcuitest-verification.md`
 
 ## 9. Update Technical Documentation (MANDATORY)
@@ -329,7 +345,7 @@ This rule applies when:
 
 ## 7. Agent Execution Requirements
 
-**CRITICAL**: When implementing tasks from `tasks.md` (via `openspec-apply-change` skill or `/opsx:apply`), the coding agent MUST:
+**CRITICAL**: When implementing tasks from `tasks.md` (via `/opsx:apply`), the coding agent MUST:
 
 1. **Execute All Tests**: Never ask the user to run `xcodebuild test` or verify the simulator. The agent must:
    - Run `xcodebuild test` and capture the output
@@ -344,10 +360,14 @@ This rule applies when:
 
 3. **Never Delegate Testing**: The agent must never:
    - Ask the user to run `xcodebuild test`
-   - Ask the user to check the simulator manually
-   - Ask the user to run XCUITests
-   - Mark tasks as completed without executing tests
-   - Skip mandatory testing steps
+   - Ask the user to check the simulator manually (when the simulator step applies)
+   - Ask the user to run XCUITests (when the XCUITest step applies)
+   - Mark tasks as completed without executing the applicable tests
+   - Skip a step that applies to the change
+
+   *Conditional steps (N+2 simulator, N+3 XCUITest) may be skipped only when they do not apply
+   to the change (see the Applicability rule above). When skipped, record a one-line rationale in
+   `tasks.md` instead of a report. Unit tests (N+1) and documentation (N+4) are never skipped.*
 
 4. **Document Test Execution**: The agent must document:
    - All `xcodebuild` commands executed

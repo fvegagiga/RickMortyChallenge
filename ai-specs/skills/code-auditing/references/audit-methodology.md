@@ -17,13 +17,13 @@ Run existing linting and testing to establish a baseline before the audit:
 ```bash
 # Build — check for compiler errors and warnings
 xcodebuild build \
-  -scheme RickMortyChallenge \
+  -scheme <AppName> \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   | xcpretty
 
 # Run all tests
 xcodebuild test \
-  -scheme RickMortyChallenge \
+  -scheme <AppName> \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   | xcpretty
 
@@ -51,10 +51,10 @@ find . -name "*.swift" \
   -not -path "*/.build/*"
 
 # Group by Clean Architecture layer
-find RickMortyChallenge/Domain -name "*.swift"
-find RickMortyChallenge/Data -name "*.swift"
-find RickMortyChallenge/Core -name "*.swift"
-find RickMortyChallenge/Presentation -name "*.swift"
+find <AppName>/Domain -name "*.swift"
+find <AppName>/Data -name "*.swift"
+find <AppName>/Core -name "*.swift"
+find <AppName>/Presentation -name "*.swift"
 ```
 
 ### Organization
@@ -159,14 +159,14 @@ Verify that the dependency rule is respected across layers:
 ### Dependency Rule Checks
 ```bash
 # Domain layer must NOT import Data, Core infrastructure, or UI frameworks
-grep -rn "^import" RickMortyChallenge/Domain --include="*.swift" \
+grep -rn "^import" <AppName>/Domain --include="*.swift" \
   | grep -v "Foundation\|XCTest"
 
 # Data layer should only import Domain + networking
-grep -rn "^import SwiftUI" RickMortyChallenge/Data --include="*.swift"
+grep -rn "^import SwiftUI" <AppName>/Data --include="*.swift"
 
 # Presentation layer must not directly call network services
-grep -rn "NetworkService\|URLSession" RickMortyChallenge/Presentation --include="*.swift"
+grep -rn "NetworkService\|URLSession" <AppName>/Presentation --include="*.swift"
 ```
 
 ### Protocol vs Concrete Dependency
@@ -283,7 +283,7 @@ Prioritized steps with:
 Each issue should include:
 ```markdown
 ### [PRIORITY] Issue Title
-**Location:** `RickMortyChallenge/Data/Repositories/CharacterRepositoryImpl.swift:42`
+**Location:** `<AppName>/Data/Repositories/<Entity>RepositoryImpl.swift:42`
 
 **Problem:**
 Description of the issue and why it matters.

@@ -1,7 +1,7 @@
 ---
 name: show-spec-working
 description: Use when the user asks "show me X", "demo X", "walk me through X", "how X works" or requests a live feature demonstration from a spec, feature or ticket.
-author: LIDR.co
+author: Fernando Vega
 version: 1.0.0
 ---
 
@@ -33,7 +33,7 @@ Do not stop at a feature summary or quick report.
   - Direct ticket id in text (for example: `SCRUM-10`)
   - Feature or screen name
   - Use case or user flow
-  - External API endpoint (Rick & Morty API)
+  - External API endpoint (the project's REST API)
 - If missing, infer from current session context and currently active work.
 
 ## Workflow
@@ -65,7 +65,7 @@ Run this path when modality is `presentation` or `mixed`.
 1. Build the app for the iOS Simulator:
    ```bash
    xcodebuild build \
-     -scheme RickMortyChallenge \
+     -scheme <AppName> \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
      | xcpretty
    ```
@@ -102,16 +102,16 @@ Run this path when modality is `domain-data` or `mixed`.
 1. Run the targeted unit tests for the affected use case or repository:
    ```bash
    xcodebuild test \
-     -scheme RickMortyChallenge \
+     -scheme <AppName> \
      -destination 'platform=iOS Simulator,name=iPhone 16' \
-     -only-testing:RickMortyChallengeTests/<TestClassName> \
+     -only-testing:<AppName>Tests/<TestClassName> \
      | xcpretty
    ```
    Report which tests passed and what they prove about the spec scenario.
 
-2. If the spec references an external API endpoint (Rick & Morty API), demonstrate the raw response with curl:
+2. If the spec references an external API endpoint, demonstrate the raw response with curl:
    ```bash
-   curl -s "https://rickandmortyapi.com/api/<endpoint>" | python3 -m json.tool
+   curl -s "<api-base-url>/<endpoint>" | python3 -m json.tool
    ```
    Confirm the response matches the DTO structure defined in the spec.
 
@@ -129,7 +129,7 @@ Before launching the simulator:
 ## External API verification requirements
 
 - Use explicit `curl` commands (not pseudocode).
-- The Rick & Morty API is read-only — no state restoration needed.
+- If the API is read-only, no state restoration is needed; otherwise restore any mutated state.
 - Include the full URL and key fields from the response in chat output.
 
 ## Completion contract

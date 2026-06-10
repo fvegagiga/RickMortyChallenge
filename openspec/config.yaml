@@ -1,42 +1,61 @@
 schema: spec-driven
 
 context: |
-  Tech stack: Swift, SwiftUI, Combine, async/await, XCTest, Swift Package Manager
+  Tech stack: iOS 17+, Swift 5.0, SwiftUI, Combine, async/await, Swift Testing, XCUITest,
+    Swift Package Manager (remote `Network` 1.0.2 package)
   Architecture: Clean Architecture with Domain, Data, Core, and Presentation layers
   Dependency rule: Domain has zero dependencies on Data, Core, or UI frameworks
   We use conventional commits in English
-  Domain: iOS app consuming the Rick and Morty REST API (rickandmortyapi.com)
-    — Characters, Episodes, Locations with pagination and image caching
+  Domain: iOS app consuming the Rick and Morty REST API (https://rickandmortyapi.com/api)
+    — Characters, Episodes, Locations with pagination, image caching, and a Character Widget
+  Testing: Swift Testing for unit tests; XCUITest + SnapshotTestKit for UI/screenshot regression;
+    90%+ line coverage across Domain and Data layers enforced in CI
+    (scripts/check-domain-data-coverage.py)
   All code, comments, documentation, and technical artifacts must be in English
 
   Project specs (single source of truth): All artifact creation and implementation
   MUST follow the project's technical context. Read and apply these when creating
   or implementing:
   - CLAUDE.md — core principles, TDD, language standards, OpenSpec workflow rules
+  - docs/project-profile.md — this project's CONCRETE choices (state management, DI,
+    networking, navigation, persistence, design tokens, deployment target, test
+    framework, type-name glossary); the standards below are generic and resolve their
+    "roles" here
   - docs/domain-data-standards.md — Clean Architecture, entities, repository protocols,
-    use cases, DTOs, mappers, networking, DI, XCTest (Domain/Data layer changes)
+    use cases, DTOs, mappers, networking, DI, Swift Testing (Domain/Data layer changes)
   - docs/presentation-standards.md — MVVM, ViewState, SwiftUI views, design system
-    (DSColors/DSSpacing/DSTypography), AppRouter, reusable components, XCUITest
+    (Color.DS.*/DSSpacing/DSTypography), AppRouter, reusable components, XCUITest
     (Presentation layer changes)
+  - docs/advanced-topics.md — optional topics: SPM modularization, local persistence
+    (SwiftData/Core Data/Keychain), Swift 6 strict concurrency (apply only when needed;
+    most sections are N/A for this project — see project-profile.md)
   - docs/documentation-standards.md — documentation structure and maintenance rules
   - docs/openspec-tasks-mandatory-steps.md — mandatory task steps: feature branch,
     xcodebuild test, simulator verification, XCUITest, documentation update
+  - docs/openspec-workflow.md — OPSX slash commands and Specboot workflow (/opsx:new, /opsx:ff,
+    /opsx:apply, /opsx:verify, /opsx:archive)
 
-  For implementation: adopt the relevant agent from ai-specs/agents/:
-  - ai-specs/agents/domain-data-developer.md — for Domain and Data layer work
-    (entities, use cases, repositories, DTOs, mappers, networking, DIContainer wiring)
-  - ai-specs/agents/presentation-developer.md — for Presentation layer work
-    (ViewModels, SwiftUI views, navigation routes, reusable components)
-  Use ai-specs/skills/ for workflow guidance when applicable.
+  ai-specs structure (implementation guidance):
+  - ai-specs/specboot-instructions.md — repository layout and Specboot onboarding overview
+  - ai-specs/agents/domain-data-developer.md — Domain and Data layer work (entities, use cases,
+    repositories, DTOs, mappers, networking, DIContainer wiring)
+  - ai-specs/agents/presentation-developer.md — Presentation layer work (ViewModels, SwiftUI
+    views, navigation routes, reusable components)
+  - ai-specs/skills/ — reusable workflow skills (adapt-standards, commit, enrich-us,
+    adversarial-review, code-auditing, update-docs, etc.); load automatically when a
+    request matches the skill description
 
 rules:
   _global:
     - Before creating any artifact, read and apply CLAUDE.md
+    - Resolve concrete technical choices and symbol names from docs/project-profile.md;
+      if it is missing or all-TBD, run the adapt-standards skill before proceeding
     - For Domain/Data layer artifacts, read docs/domain-data-standards.md and adopt
       guidelines from ai-specs/agents/domain-data-developer.md
     - For Presentation layer artifacts, read docs/presentation-standards.md and adopt
       guidelines from ai-specs/agents/presentation-developer.md
     - All tasks.md files must follow docs/openspec-tasks-mandatory-steps.md
+    - Use Swift Testing (@Test, #expect, @Suite) for new unit tests in RickMortyChallengeTests
 
   tasks:
     - Step 0 must always be "Create feature branch"
@@ -49,4 +68,4 @@ rules:
   proposal:
     - Always include a "Non-goals" section
     - Reference the affected Clean Architecture layer(s) explicitly
-    - Include test strategy (unit tests, simulator verification, XCUITest)
+    - Include test strategy (Swift Testing unit tests, simulator verification, XCUITest)

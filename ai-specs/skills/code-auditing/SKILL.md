@@ -25,9 +25,9 @@ Comprehensive methodology for systematic code quality audits of iOS Swift/SwiftU
 4. Run existing linting and test commands as baseline:
    ```bash
    swiftlint lint                                    # if SwiftLint is installed
-   xcodebuild build -scheme RickMortyChallenge \
+   xcodebuild build -scheme <AppName> \
      -destination 'platform=iOS Simulator,name=iPhone 16' | xcpretty
-   xcodebuild test -scheme RickMortyChallenge \
+   xcodebuild test -scheme <AppName> \
      -destination 'platform=iOS Simulator,name=iPhone 16' | xcpretty
    ```
 5. Load documentation for identified core frameworks (Swift, SwiftUI, Combine, XCTest)
@@ -132,7 +132,7 @@ Generate detailed report with:
 - Use `grep` to find symbols declared but never referenced:
   ```bash
   # Find functions/methods defined but never called
-  grep -rn "func " RickMortyChallenge --include="*.swift" | grep -v "test\|Test\|override"
+  grep -rn "func " <AppName> --include="*.swift" | grep -v "test\|Test\|override"
   ```
 - Review Xcode's "unused" warnings in the build log
 

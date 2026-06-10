@@ -1,62 +1,59 @@
-import XCTest
 import Network
+import Testing
 @testable import RickMortyChallenge
 
-@MainActor
-final class CharacterDetailViewModelTests: XCTestCase {
-    var sut: CharacterDetailViewModel!
-    var mockRepository: MockCharacterRepository!
-    var useCase: GetCharacterDetailUseCase!
+@Suite @MainActor
+struct CharacterDetailViewModelTests {
+    let sut: CharacterDetailViewModel
+    let mockRepository: MockCharacterRepository
 
-    override func setUp() {
-        super.setUp()
+    init() {
         mockRepository = MockCharacterRepository()
-        useCase = GetCharacterDetailUseCase(repository: mockRepository)
+        let useCase = GetCharacterDetailUseCase(repository: mockRepository)
         sut = CharacterDetailViewModel(characterId: 42, getCharacterDetailUseCase: useCase)
     }
 
-    override func tearDown() {
-        sut = nil
-        useCase = nil
-        mockRepository = nil
-        super.tearDown()
-    }
-
-    func testLoadDetail_fetchesCorrectCharacterId() async {
+    @Test
+    func loadDetail_fetchesCorrectCharacterId() async {
         mockRepository.fetchCharacterDetailResult = .success(
             MockDataFactory.makeCharacterEntity(id: 42)
         )
 
         await sut.loadDetail()
 
-        XCTAssertEqual(mockRepository.lastDetailId, 42)
+        #expect(mockRepository.lastDetailId == 42)
     }
 
-    func testLoadDetail_withSuccess_setsSuccessState() async {
+    @Test
+    func loadDetail_withSuccess_setsSuccessState() async {
         let character = MockDataFactory.makeCharacterEntity(id: 42, name: "Morty Smith")
         mockRepository.fetchCharacterDetailResult = .success(character)
 
         await sut.loadDetail()
 
         if case .success(let loaded) = sut.viewState {
-            XCTAssertEqual(loaded.id, 42)
-            XCTAssertEqual(loaded.name, "Morty Smith")
+            #expect(loaded.id == 42)
+            #expect(loaded.name == "Morty Smith")
         } else {
-            XCTFail("Expected .success state")
+            Issue.record("Expected .success state")
         }
     }
 
-    func testLoadDetail_withError_setsFailureState() async {
+    @Test
+    func loadDetail_withError_setsFailureState() async {
         mockRepository.fetchCharacterDetailResult = .failure(NetworkError.notFound)
 
         await sut.loadDetail()
 
-        if case .failure = sut.viewState { /* pass */ } else {
-            XCTFail("Expected .failure state")
+        if case .failure = sut.viewState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected .failure state")
         }
     }
 
-    func testLoadDetail_whenCalledTwice_onlyFetchesOnce() async {
+    @Test
+    func loadDetail_whenCalledTwice_onlyFetchesOnce() async {
         mockRepository.fetchCharacterDetailResult = .success(
             MockDataFactory.makeCharacterEntity(id: 42)
         )
@@ -64,10 +61,11 @@ final class CharacterDetailViewModelTests: XCTestCase {
         await sut.loadDetail()
         await sut.loadDetail()
 
-        XCTAssertEqual(mockRepository.fetchDetailCallCount, 1)
+        #expect(mockRepository.fetchDetailCallCount == 1)
     }
 
-    func testRetry_resetsStateAndFetchesAgain() async {
+    @Test
+    func retry_resetsStateAndFetchesAgain() async {
         mockRepository.fetchCharacterDetailResult = .failure(NetworkError.notFound)
         await sut.loadDetail()
 
@@ -76,9 +74,11 @@ final class CharacterDetailViewModelTests: XCTestCase {
         )
         await sut.retry()
 
-        if case .success = sut.viewState { /* pass */ } else {
-            XCTFail("Expected .success after retry")
+        if case .success = sut.viewState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected .success after retry")
         }
-        XCTAssertEqual(mockRepository.fetchDetailCallCount, 2)
+        #expect(mockRepository.fetchDetailCallCount == 2)
     }
 }

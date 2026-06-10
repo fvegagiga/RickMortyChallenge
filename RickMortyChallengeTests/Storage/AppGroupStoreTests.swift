@@ -1,110 +1,103 @@
-import XCTest
+import Foundation
+import Testing
 @testable import RickMortyChallenge
 
-final class AppGroupStoreTests: XCTestCase {
-    var sut: AppGroupStore!
-    var testDefaults: UserDefaults!
+@Suite
+struct AppGroupStoreTests {
+    let sut: AppGroupStore
+    let testDefaults: UserDefaults
 
-    override func setUp() {
-        super.setUp()
-        testDefaults = UserDefaults(suiteName: "test.appgroupstore.\(UUID().uuidString)")
+    init() {
+        testDefaults = UserDefaults(suiteName: "test.appgroupstore.\(UUID().uuidString)")!
         sut = AppGroupStore(defaults: testDefaults)
     }
 
-    override func tearDown() {
-        testDefaults.removePersistentDomain(forName: testDefaults.description)
-        sut = nil
-        testDefaults = nil
-        super.tearDown()
-    }
-
-    // MARK: - writeSnapshot
-
-    func testWriteSnapshot_persistsCharacters() {
+    @Test
+    func writeSnapshot_persistsCharacters() {
         let characters = makeCharacters(count: 3)
         sut.writeSnapshot(characters)
-        XCTAssertEqual(sut.totalCount(), 3)
+        #expect(sut.totalCount() == 3)
     }
 
-    func testWriteSnapshot_resetsIndexToZero() {
+    @Test
+    func writeSnapshot_resetsIndexToZero() {
         sut.setCurrentIndex(5)
         sut.writeSnapshot(makeCharacters(count: 3))
-        XCTAssertEqual(sut.currentIndex(), 0)
+        #expect(sut.currentIndex() == 0)
     }
 
-    func testWriteSnapshot_overwritesPreviousSnapshot() {
+    @Test
+    func writeSnapshot_overwritesPreviousSnapshot() {
         sut.writeSnapshot(makeCharacters(count: 5))
         sut.writeSnapshot(makeCharacters(count: 2))
-        XCTAssertEqual(sut.totalCount(), 2)
+        #expect(sut.totalCount() == 2)
     }
 
-    // MARK: - currentCharacter
-
-    func testCurrentCharacter_returnsNilWhenEmpty() {
-        XCTAssertNil(sut.currentCharacter())
+    @Test
+    func currentCharacter_returnsNilWhenEmpty() {
+        #expect(sut.currentCharacter() == nil)
     }
 
-    func testCurrentCharacter_returnsFirstByDefault() {
+    @Test
+    func currentCharacter_returnsFirstByDefault() {
         let characters = makeCharacters(count: 3)
         sut.writeSnapshot(characters)
-        XCTAssertEqual(sut.currentCharacter()?.id, characters[0].id)
+        #expect(sut.currentCharacter()?.id == characters[0].id)
     }
 
-    func testCurrentCharacter_respectsCurrentIndex() {
+    @Test
+    func currentCharacter_respectsCurrentIndex() {
         let characters = makeCharacters(count: 3)
         sut.writeSnapshot(characters)
         sut.setCurrentIndex(2)
-        XCTAssertEqual(sut.currentCharacter()?.id, characters[2].id)
+        #expect(sut.currentCharacter()?.id == characters[2].id)
     }
 
-    // MARK: - setCurrentIndex / currentIndex
-
-    func testSetCurrentIndex_persistsValue() {
+    @Test
+    func setCurrentIndex_persistsValue() {
         sut.writeSnapshot(makeCharacters(count: 5))
         sut.setCurrentIndex(3)
-        XCTAssertEqual(sut.currentIndex(), 3)
+        #expect(sut.currentIndex() == 3)
     }
 
-    func testCurrentIndex_returnsZeroWhenNeverSet() {
-        XCTAssertEqual(sut.currentIndex(), 0)
+    @Test
+    func currentIndex_returnsZeroWhenNeverSet() {
+        #expect(sut.currentIndex() == 0)
     }
 
-    // MARK: - totalCount
-
-    func testTotalCount_returnsZeroWhenEmpty() {
-        XCTAssertEqual(sut.totalCount(), 0)
+    @Test
+    func totalCount_returnsZeroWhenEmpty() {
+        #expect(sut.totalCount() == 0)
     }
 
-    func testTotalCount_matchesWrittenSnapshot() {
+    @Test
+    func totalCount_matchesWrittenSnapshot() {
         sut.writeSnapshot(makeCharacters(count: 7))
-        XCTAssertEqual(sut.totalCount(), 7)
+        #expect(sut.totalCount() == 7)
     }
 
-    // MARK: - imageURL
-
-    func testImageURL_returnsNilWhenContainerUnavailable() {
+    @Test
+    func imageURL_returnsNilWhenContainerUnavailable() {
         let store = AppGroupStore(defaults: nil)
-        XCTAssertNil(store.imageURL(for: 1))
+        #expect(store.imageURL(for: 1) == nil)
     }
 
-    // MARK: - CharacterWidgetData backward compatibility
-
-    func testCharacterWidgetData_decodesLegacyPayloadWithoutStatus_defaultsToEmptyString() throws {
+    @Test
+    func characterWidgetData_decodesLegacyPayloadWithoutStatus_defaultsToEmptyString() throws {
         let legacyJSON = """
         [{"id":1,"name":"Rick","imageFileName":"1.jpg"}]
         """.data(using: .utf8)!
         let characters = try JSONDecoder().decode([CharacterWidgetData].self, from: legacyJSON)
-        XCTAssertEqual(characters[0].status, "")
+        #expect(characters[0].status == "")
     }
 
-    func testCharacterWidgetData_encodesAndDecodesStatusRoundTrip() throws {
+    @Test
+    func characterWidgetData_encodesAndDecodesStatusRoundTrip() throws {
         let original = CharacterWidgetData(id: 1, name: "Rick", imageFileName: "1.jpg", imageURL: nil, status: "Alive")
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(CharacterWidgetData.self, from: data)
-        XCTAssertEqual(decoded.status, "Alive")
+        #expect(decoded.status == "Alive")
     }
-
-    // MARK: - Helpers
 
     private func makeCharacters(count: Int) -> [CharacterWidgetData] {
         (1...count).map { i in

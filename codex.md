@@ -27,16 +27,20 @@ alwaysApply: true
 
 For detailed standards and guidelines specific to different areas of the project, refer to:
 
-- [Domain & Data Standards](./docs/domain-data-standards.md) - Clean Architecture, repositories, use cases, URLSession, async/await, XCTest
+- [Project Profile](./docs/project-profile.md) - This project's CONCRETE choices (state management, DI, networking, navigation, persistence, design tokens, deployment target, test framework). The standards below are generic and resolve their "roles" here. Populated by the `adapt-standards` skill.
+- [Domain & Data Standards](./docs/domain-data-standards.md) - Clean Architecture, repositories, use cases, networking abstraction, async/await, testing
 - [Presentation Standards](./docs/presentation-standards.md) - MVVM, views, design system, navigation, components, XCUITest
+- [Advanced & Optional Topics](./docs/advanced-topics.md) - SPM modularization, local persistence (SwiftData/Core Data/Keychain), Swift 6 strict concurrency (apply only when needed)
 - [Documentation Standards](./docs/documentation-standards.md) - Technical documentation structure, formatting, and maintenance guidelines, including AI standards like this document
 - [OpenSpec Tasks Mandatory Steps](./docs/openspec-tasks-mandatory-steps.md) - Required checklist and execution rules when creating or updating OpenSpec `tasks.md` files
+- [OpenSpec Workflow](./docs/openspec-workflow.md) - OPSX slash commands (`/opsx:*`) and the Specboot end-to-end flow
 
 ## 4. Project Skills
 
 - Skills live in `ai-specs/skills`.
 - When a request matches a skill, load and follow the corresponding `SKILL.md` automatically before continuing.
 - Also load any referenced files in the skill folder (for example, `references/*.md`) when the skill requires them.
+- **First run after import**: run the `adapt-standards` skill to populate `docs/project-profile.md` (analyzing an existing codebase or applying recommended defaults for a new one) before using the OpenSpec workflow.
 
 ## 5. Planning Model Requirement
 
@@ -44,8 +48,7 @@ Planning workflows must run with Opus high reasoning.
 
 This requirement applies to:
 - `enrich-us`
-- `openspec-ff-change`
-- `openspec-continue-change`
+- `/opsx:propose`, `/opsx:ff`, `/opsx:continue` (OpenSpec planning commands)
 
 Before starting any of these workflows, verify the session is using Opus high reasoning. If it is not, **self-correct** by adding `"model": "claude-opus-4-7"` to `.claude/settings.json` (use the `update-config` skill or edit directly), then continue — do not stop and ask the user. Do the same to come back to sonnet medium for any other step.
 
@@ -59,12 +62,12 @@ Before starting any of these workflows, verify the session is using Opus high re
 
 ## 7. Mandatory OpenSpec Artifact Updates for Post-Apply Changes
 
-When a new fix/change request appears after `opsx:apply` (or `/apply`) and before `opsx:archive` (or `/archive`), agents must treat it as a spec update first, not as an informal "fix this quickly". It's the core principle of openspec, documentation is the source of truth.
+When a new fix/change request appears after `/opsx:apply` and before `/opsx:archive`, agents must treat it as a spec update first, not as an informal "fix this quickly". It's the core principle of openspec, documentation is the source of truth.
 
 Required order:
 
 1. Update the current OpenSpec change artifacts that are affected (for example: scenarios, requirements/specs, and `tasks.md`). Don't add tasks as "bugfixes" but as part of the initial design, thus in the proper section
-2. If artifact regeneration is needed, run the corresponding OpenSpec step (`opsx:continue`, `opsx:ff`, or equivalent) before coding.
+2. If artifact regeneration is needed, run the corresponding OpenSpec step (`/opsx:continue` or `/opsx:ff`) before coding.
 3. Implement code only after artifacts reflect the new request.
 4. Re-run verification against the updated artifacts before archiving.
 

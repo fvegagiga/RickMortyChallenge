@@ -1,26 +1,20 @@
-import XCTest
+import Testing
 @testable import RickMortyChallenge
 
-@MainActor
-final class LocationsListViewModelTests: XCTestCase {
-    var sut: LocationsListViewModel!
-    var mockRepository: MockLocationRepository!
+@Suite @MainActor
+struct LocationsListViewModelTests {
+    let sut: LocationsListViewModel
+    let mockRepository: MockLocationRepository
 
-    override func setUp() {
-        super.setUp()
+    init() {
         mockRepository = MockLocationRepository()
         sut = LocationsListViewModel(
             getLocationsUseCase: GetLocationsUseCase(repository: mockRepository)
         )
     }
 
-    override func tearDown() {
-        sut = nil
-        mockRepository = nil
-        super.tearDown()
-    }
-
-    func testLoadInitial_withSuccess_setsSuccessState() async {
+    @Test
+    func loadInitial_withSuccess_setsSuccessState() async {
         let locations = MockDataFactory.makeLocationEntities(count: 4)
         mockRepository.fetchLocationsResult = .success(
             MockDataFactory.makePagedResult(items: locations, hasNextPage: false)
@@ -29,25 +23,29 @@ final class LocationsListViewModelTests: XCTestCase {
         await sut.loadInitial()
 
         if case .success(let loaded) = sut.viewState {
-            XCTAssertEqual(loaded.count, 4)
+            #expect(loaded.count == 4)
         } else {
-            XCTFail("Expected .success state")
+            Issue.record("Expected .success state")
         }
     }
 
-    func testLoadInitial_whenNoLocations_setsEmptyState() async {
+    @Test
+    func loadInitial_whenNoLocations_setsEmptyState() async {
         mockRepository.fetchLocationsResult = .success(
             MockDataFactory.makePagedResult(items: [], hasNextPage: false)
         )
 
         await sut.loadInitial()
 
-        if case .empty = sut.viewState { /* pass */ } else {
-            XCTFail("Expected .empty state")
+        if case .empty = sut.viewState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected .empty state")
         }
     }
 
-    func testRefresh_replacesExistingData() async {
+    @Test
+    func refresh_replacesExistingData() async {
         mockRepository.fetchLocationsResult = .success(
             MockDataFactory.makePagedResult(items: MockDataFactory.makeLocationEntities(count: 2))
         )
@@ -60,9 +58,9 @@ final class LocationsListViewModelTests: XCTestCase {
         await sut.refresh()
 
         if case .success(let loaded) = sut.viewState {
-            XCTAssertEqual(loaded.count, 8)
+            #expect(loaded.count == 8)
         } else {
-            XCTFail("Expected .success with refreshed data")
+            Issue.record("Expected .success with refreshed data")
         }
     }
 }
