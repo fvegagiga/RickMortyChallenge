@@ -44,3 +44,6 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/
 fastlane/test_output/
+
+# Local task definitions (enrich-us output)
+docs/current-task/task-definition.md
