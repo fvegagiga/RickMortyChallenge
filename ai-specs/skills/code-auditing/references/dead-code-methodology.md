@@ -24,13 +24,13 @@ private func legacyFormatDate(_ date: Date) -> String { ... }  // Never invoked
 ### 3. Unused Variables and Constants
 `let`/`var` bindings declared but never read:
 ```swift
-let result = try await fetchCharacters()   // result never used — just `try await`
+let result = try await fetch<Entity>List()   // result never used — just `try await`
 ```
 
 ### 4. Unused Types
 `struct`, `class`, `enum`, or `protocol` declarations never referenced:
 ```swift
-struct LegacyCharacterModel { ... }   // Replaced by CharacterEntity, never referenced
+struct Legacy<Entity>Model { ... }   // Replaced by <Entity>Entity, never referenced
 ```
 
 ### 5. Unused Files
@@ -62,7 +62,7 @@ Build the project and review warnings — Swift's compiler flags:
 
 ```bash
 xcodebuild build \
-  -scheme RickMortyChallenge \
+  -scheme <AppName> \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   2>&1 | grep "warning:" | grep -i "unused\|never used\|unreachable"
 ```
@@ -84,7 +84,7 @@ For `internal` and `public` symbols (not caught by compiler warnings on `private
 
 ```bash
 # Find all function declarations in Domain/Data layers
-grep -rn "func " RickMortyChallenge --include="*.swift" \
+grep -rn "func " <AppName> --include="*.swift" \
   | grep -v "override\|test\|Test\|init\|body\|Preview"
 
 # For each symbol found, check if it is referenced anywhere
@@ -95,7 +95,7 @@ grep -rn "symbolName" . --include="*.swift" | wc -l
 ```bash
 # Find unused struct/class/enum types
 grep -rn "^struct \|^final class \|^class \|^enum " \
-  RickMortyChallenge --include="*.swift" \
+  <AppName> --include="*.swift" \
   | awk -F': ' '{print $2}' | awk '{print $2}'
 # Then grep each name to check reference count
 ```
@@ -122,7 +122,7 @@ func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, ...) { ... 
 ```swift
 // App entry point — never "called" from Swift code directly
 @main
-struct RickMortyChallengeApp: App { ... }
+struct <AppName>App: App { ... }
 ```
 
 #### 4. SwiftUI `body` and View Modifiers
@@ -134,8 +134,8 @@ var body: some View { ... }
 #### 5. `#Preview` Macros and Test Helpers
 ```swift
 // Only used at preview/test time
-#Preview { CharactersListView(...) }
-final class MockCharacterRepository { ... }  // Only referenced in test files
+#Preview { <Feature>ListView(...) }
+final class Mock<Entity>Repository { ... }  // Only referenced in test files
 ```
 
 #### 6. `@discardableResult` Functions
@@ -148,8 +148,8 @@ func register(_ handler: Handler) -> Self { ... }
 #### 7. Protocol Default Implementations
 ```swift
 // Looks unused but provides default behaviour for protocol adopters
-extension CharacterRepositoryProtocol {
-    func fetchCharacterDetail(id: Int) async throws -> CharacterEntity { ... }
+extension <Entity>RepositoryProtocol {
+    func fetch<Entity>Detail(id: Int) async throws -> <Entity>Entity { ... }
 }
 ```
 
@@ -179,7 +179,7 @@ For each flagged item, the agent MUST:
 
 ```bash
 # Step 1: compiler warnings
-xcodebuild build -scheme RickMortyChallenge \
+xcodebuild build -scheme <AppName> \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   2>&1 | grep "warning:" | grep -i "unused\|unreachable" | sort -u
 

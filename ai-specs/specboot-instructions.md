@@ -12,23 +12,28 @@ It's highly recommended to be used along with Spec-Driven Development frameworks
 
 ```
 .
-├── docs/                        # Development standards and specifications
-│   ├── base-standards.md        # Core development rules (single source of truth)
-│   ├── backend-standards.md
-│   ├── frontend-standards.md
-│   ├── documentation-standards.md
-│   ├── api-spec.yml             # OpenAPI specification
-│   ├── data-model.md            # Database and domain models
-│   ├── development_guide.md
+├── docs/                            # Development standards and specifications (generic, role-based)
+│   ├── project-profile.md           # This project's CONCRETE choices (filled by adapt-standards)
+│   ├── domain-data-standards.md     # Clean Architecture: Domain & Data layers
+│   ├── presentation-standards.md    # SwiftUI + MVVM Presentation layer
+│   ├── advanced-topics.md           # Optional: SPM modularization, persistence, Swift 6
+│   ├── documentation-standards.md   # Documentation structure and maintenance
+│   ├── openspec-tasks-mandatory-steps.md  # Mandatory task structure for OpenSpec changes
+│   ├── openspec-workflow.md         # OPSX slash commands and Specboot end-to-end flow
+│   └── openspec-setup.md            # Prompt to configure openspec/config.yaml
 ├── ai-specs/
-│   ├── agents/                  # Agent role definitions (backend, frontend, analyst, etc.)
-│   └── skills/                  # Reusable skill prompts/workflows
+│   ├── agents/                      # Agent role definitions (domain-data, presentation, analyst)
+│   └── skills/                      # Reusable skill prompts/workflows (incl. adapt-standards)
 │
-├── AGENTS.md                    # Generic agent configuration
-├── CLAUDE.md                    # Claude-specific configuration
-├── codex.md                     # GitHub Copilot/Codex configuration
-└── GEMINI.md                    # Gemini-specific configuration
+├── AGENTS.md                        # Generic agent configuration (core rules, single source of truth)
+├── CLAUDE.md                        # Claude/Cursor-specific configuration
+├── codex.md                         # GitHub Copilot/Codex configuration
+└── GEMINI.md                        # Gemini-specific configuration
 ```
+
+> The standards in `docs/` are **generic and role-based**: they describe principles and roles, not a
+> specific stack. The concrete choices for your project live in `docs/project-profile.md`, produced
+> by the `adapt-standards` skill (see step 3 below).
 
 ## 🤖 Multi-Copilot Support
 
@@ -39,11 +44,11 @@ This repository uses **symbolic links** or **naming conventions** to support mul
 - **`codex.md`** → Optimized for GitHub Copilot/Codex
 - **`GEMINI.md`** → Optimized for Google Gemini
 
-All these files reference the same core rules in `docs/base-standards.md`, ensuring consistency across different AI tools while allowing copilot-specific customizations.
+All these files share the same core rules (kept identical across `AGENTS.md`, `CLAUDE.md`, `codex.md`, and `GEMINI.md`), ensuring consistency across different AI tools while allowing copilot-specific customizations.
 
 ### Why This Approach?
 
-✅ **Single Source of Truth**: Core rules maintained in one place (`base-standards.md`)  
+✅ **Single Source of Truth**: Core rules maintained in one place (`AGENTS.md`/`CLAUDE.md`)  
 ✅ **Copilot Compatibility**: Each AI tool finds its configuration using its preferred naming convention  
 ✅ **Zero Configuration**: Import into a new project and it works immediately  
 ✅ **Easy Updates**: Update rules once, all copilots benefit  
@@ -72,112 +77,91 @@ cd your-project
 openspec init
 ```
 
+Enable the **expanded OPSX workflow** (required for Specboot's iOS flow — `/opsx:ff`, `/opsx:verify`, …):
+
+```bash
+openspec config profile   # select expanded workflow commands
+openspec update             # regenerate slash-command instructions in the project
+```
+
+See [OpenSpec Workflows](https://github.com/Fission-AI/OpenSpec/blob/main/docs/workflows.md) and
+`docs/openspec-workflow.md` for details.
+
 ### 2) Import Into Your Project
 
-Copy this repository into your project first, so the `docs/` and `ai-specs/` paths already exist when you configure OpenSpec:
+Copy this repository into your project first, so the `docs/` and `ai-specs/` paths already exist when you configure OpenSpec.
 
-```bash
-# Clone or copy this repository into your project (`-n`: do not overwrite existing files so you keep project's original README)
-cp -rn lidr-specboot/* your-project/
+### 3) Adapt the Standards to Your Project (Mandatory)
+
+This step is required. The standards in `docs/` are **generic and role-based** — they describe
+principles and roles (a networking abstraction, a composition root, a navigation strategy, …)
+rather than a fixed stack. To turn them into project-specific guidance, run the **`adapt-standards`
+skill** as your **first task** after importing:
+
+```text
+Run the adapt-standards skill to adapt these standards to my project.
 ```
 
-Alternative for step 2 (Claude Code users):
+What it does:
 
-- You can alternatively install the Claude plugin and use it as the coding agent for this import step.
-- This only changes **how** you install Specboot. It does **not** install OpenSpec, does **not** update OpenSpec config, and does **not** customize `docs/`.
+- **Existing project**: scans your code and records the real choices (state management, DI,
+  networking, navigation, persistence, design tokens, test framework) in `docs/project-profile.md`,
+  and prunes standards sections that do not apply.
+- **New project**: asks a short questionnaire and applies the recommended defaults
+  (`@Observable`, Swift 6, constructor DI, native `NavigationStack`, Swift Testing, …) from
+  `ai-specs/skills/adapt-standards/references/recommended-defaults.md`, then fills the profile.
 
-Quick install:
-
-```bash
-npx @lidr/lidr-specboot
-```
-
-This copies all files into your project and recreates the symlink structure automatically. Safe to re-run: existing files are never overwritten.
-
-
-### 3) Customize `docs/` for Your Project (Mandatory)
-
-This step is required. If you skip it, your AI assistant will use generic technical context instead of your real project context.
-
-Update the files in `docs/` to match your stack, architecture patterns, domain language, API contracts, and data model.
-
-For detailed guidance and ready-to-use prompt examples, see [Customization](#-customization).
+After this, `docs/project-profile.md` is the single source of truth for your project's concrete
+choices, and the generic standards resolve their roles against it. For optional manual tweaks, see
+[Customization](#-customization).
 
 ### 4) Point OpenSpec Config to Your `docs/` and `ai-specs/`
 
-After `openspec init` and after copying this repository, update your project's `config.yml` to include your technical context from `docs`.
+After `openspec init`, after copying this repository, and after running `adapt-standards`, update
+your project's `openspec/config.yaml` so its context references your standards, the project profile,
+and the role agents.
 
-Prompt example to automate this with your copilot:
-
-```text
-Update my openspec config.yml context to reference this repository's docs and ai-specs structure.
-
-Requirements:
-- Use docs/base-standards.md as the single source of truth.
-- Include docs/backend-standards.md, docs/frontend-standards.md, docs/documentation-standards.md.
-- Include docs/api-spec.yml and docs/data-model.md.
-- Tell the agent to adopt ai-specs/agents/backend-developer.md for backend work and ai-specs/agents/frontend-developer.md for frontend work.
-- Mention ai-specs/skills as workflow guidance.
-- Keep all paths relative to the project root.
-```
-
-Example (`config.yml`):
-
-```yml
-context: |
-  Tech stack: TypeScript, Node.js, Express, Prisma, Domain-Driven Design (DDD)
-  Architecture: Clean Architecture with Domain, Application, and Presentation layers
-  We use conventional commits
-  Domain: LTI (Leadership. Technology. Impact) ATS platform
-  All code, comments, documentation, and technical artifacts must be in English
-
-  Project specs (single source of truth): All artifact creation and implementation MUST follow the project's technical context in ai-specs/. Read and apply these when creating or implementing:
-  - docs/base-standards.md — core principles, TDD, language standards, links to backend/frontend/docs standards
-  - docs/backend-standards.md — API, database, testing, security (backend changes)
-  - docs/frontend-standards.md — React, UI/UX (frontend changes)
-  - docs/api-spec.yml — API contracts and endpoint definitions
-  - docs/data-model.md — domain and data model
-  - docs/documentation-standards.md — docs structure and maintenance
-  For implementation: adopt the relevant agent from ai-specs/agents/ (e.g. backend-developer.md for backend, frontend-developer.md for frontend). Use ai-specs/skills/ for workflow guidance when applicable.
-
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-rules:
-  # Global: apply ai-specs when creating any artifact
-  _global:
-    - Before creating any artifact, read and apply docs/base-standards.md
-    - For backend-related artifacts, read docs/backend-standards.md and adopt guidelines from ai-specs/agents/backend-developer.md
-    - For frontend-related artifacts, read docs/frontend-standards.md and adopt guidelines from ai-specs/agents/frontend-developer.md
-    - Use docs/api-spec.yml and docs/data-model.md for API and data consistency in specs and tasks
-```
+The full, ready-to-use prompt and the expected `config.yaml` (iOS, Clean Architecture, referencing
+`docs/project-profile.md` and the two role agents) live in **`docs/openspec-setup.md`** — follow it
+to avoid maintaining two copies of the config.
 
 ## ✅ Verify Configuration (Required)
 
 Do this after completing the setup steps above.
 
-Your AI copilot should automatically load:
+Your AI copilot should automatically load its config file (`CLAUDE.md` for Claude/Cursor, `codex.md`
+for GitHub Copilot, `GEMINI.md` for Gemini), which shares the same core rules across tools. Verify
+that:
 
-- **Claude/Cursor**: `CLAUDE.md` → `docs/base-standards.md`
-- **GitHub Copilot**: `codex.md` → `docs/base-standards.md`
-- **Gemini**: `GEMINI.md` → `docs/base-standards.md`
+- `docs/project-profile.md` exists and its axes are **Decided** (not all `TBD`).
+- `openspec/config.yaml` context references the standards, `docs/project-profile.md`, and the two
+  role agents.
 
 All paths and rules are configured to work seamlessly without manual adjustments.
 
-## 💡 Usage: Official OpenSpec Workflow
+## 💡 Usage: OpenSpec + Specboot Workflow
 
-The recommended workflow in this repository uses official OpenSpec commands:
+OpenSpec now uses **OPSX** slash commands with the `/opsx:` prefix. Legacy commands (`/ff`,
+`/apply`, `/new`, …) are deprecated.
 
-The recommended workflow in this repository uses official OpenSpec commands:
+Full command reference and migration table: **`docs/openspec-workflow.md`**.
 
-1. **`/enrich-us`** (optional): refine a vague user story or idea
-2. **`/new`**: create a new OpenSpec change (currently a copy of `/ff`)
-3. **`/ff`**: create all required OpenSpec artifacts (feature file, tasks, etc.)
-   - Running `/new` followed by `/ff` is equivalent to the new `/propose` command
-4. **`/apply`**: implement tasks one by one
-5. **`/verify`**: validate implementation against the change artifacts
-6. **`/adversarial-review`**: independent red-team code review before archiving
-7. **`/archive`**: archive the completed change
-8. **`/commit`**: create focused commit(s) and manages Pull Request after verification
+### Recommended flow (expanded profile)
+
+| Step | Command / skill | Role |
+|---|---|---|
+| 1 (once) | `adapt-standards` | Adapt generic standards to this project |
+| 2 (optional) | `enrich-us` | Refine a vague user story or Jira ticket |
+| 3 | `/opsx:new` → `/opsx:ff` | Create change + all planning artifacts |
+| 4 | `/opsx:apply` | Implement `tasks.md` |
+| 5 | `/opsx:verify` | Validate implementation vs artifacts |
+| 6 | `adversarial-review` | Independent red-team review (Specboot) |
+| 7 | `/opsx:archive` | Archive completed change (syncs specs if needed) |
+| 8 | `commit` | Focused commits + PR (Specboot) |
+
+Alternatives: `/opsx:propose` (faster, `core` profile), `/opsx:continue` (step-by-step planning),
+`/opsx:explore` (investigation before planning). See `docs/openspec-workflow.md`.
+
 Workflow reference image:
 
 ![OpenSpec custom workflow reference](https://drive.google.com/uc?export=view&id=1Bu8hysVBlpBZgH3SVgRh3knHS7W4X5ud)
@@ -202,13 +186,14 @@ Use these commands in sequence:
 
 Optional first step (recommended): create a dedicated worktree before running the command flow, then clean it up when done. The `using-git-worktrees` skill can automate this.
 
-```bash
+```text
 /enrich-us SCRUM-10
-/ff SCRUM-10
-/apply SCRUM-10
-/verify SCRUM-10
-/adversarial-review SCRUM-10
-/archive SCRUM-10
+/opsx:new add-product-detail
+/opsx:ff add-product-detail
+/opsx:apply add-product-detail
+/opsx:verify add-product-detail
+/adversarial-review add-product-detail
+/opsx:archive add-product-detail
 /commit
 ```
 
@@ -223,17 +208,17 @@ Skills live in `ai-specs/skills/` and are mirrored into `.claude/skills/` and `.
 - **`writing-skills`** — Author and verify new skills (or refactor existing ones) following TDD-style validation before deployment. Use when adding a skill to `ai-specs/skills/` or editing an existing `SKILL.md`.
 - **`code-auditing`** — Run a systematic 6-phase code quality audit covering security, performance, type safety, dead code, and library best practices, ending with a prioritized action plan. Use for pre-release reviews, technical-debt sweeps, and dependency audits.
 
-Other active skills in this repository: `commit`, `explain`, `meta-prompt`, `update-docs`. See each `ai-specs/skills/<name>/SKILL.md` for the full instructions.
+Other active skills in this repository: `adapt-standards` (run first, after import), `commit`, `explain`, `meta-prompt`, `update-docs`. See each `ai-specs/skills/<name>/SKILL.md` for the full instructions.
 
 ## 📖 Core Development Rules
 
-All development follows principles defined in `docs/base-standards.md`:
+All development follows the core principles defined in `CLAUDE.md` / `AGENTS.md`:
 
 ### Key Principles
 
 1. **Small Tasks, One at a Time**: Baby steps, never skip ahead
 2. **Test-Driven Development (TDD)**: Write failing tests first
-3. **Type Safety**: Fully typed code (TypeScript)
+3. **Type Safety**: Fully typed Swift code
 4. **Clear Naming**: Descriptive variables and functions
 5. **English Only**: All code, comments, documentation, and messages in English
 6. **90%+ Test Coverage**: Comprehensive testing across all layers
@@ -241,21 +226,19 @@ All development follows principles defined in `docs/base-standards.md`:
 
 ### Specific Standards
 
-- **Backend Standards**: `docs/backend-standards.md`
-  - API development patterns
-  - Database best practices
-  - Security guidelines
-  - Testing requirements
-- **Frontend Standards**: `docs/frontend-standards.md`
-  - React component patterns
-  - UI/UX guidelines
-  - State management
-  - Component testing
+- **Project Profile**: `docs/project-profile.md`
+  - This project's concrete choices for every role (the standards below are generic)
+- **Domain & Data Standards**: `docs/domain-data-standards.md`
+  - Clean Architecture, entities, repository protocols, use cases
+  - DTOs, mappers, networking abstraction, dependency injection
+  - Unit testing (Swift Testing / XCTest)
+- **Presentation Standards**: `docs/presentation-standards.md`
+  - SwiftUI + MVVM, `ViewState`, navigation strategy
+  - Design system tokens, reusable components, XCUITest
+- **Advanced & Optional Topics**: `docs/advanced-topics.md`
+  - SPM modularization, local persistence, Swift 6 strict concurrency
 - **Documentation Standards**: `docs/documentation-standards.md`
-  - Technical documentation structure
-  - API documentation (OpenAPI)
-  - Code documentation
-  - Maintenance guidelines
+  - Technical documentation structure and maintenance guidelines
 
 ## 🎯 Benefits
 
@@ -300,23 +283,24 @@ All development follows principles defined in `docs/base-standards.md`:
 
 ### Prompt Example: Adapt Technical Context
 
-Use this prompt with your copilot to adapt the `docs/` folder while preserving the same baseline structure:
+The primary, recommended path is to run the **`adapt-standards`** skill (step 3 above), which fills
+`docs/project-profile.md` and prunes non-applicable sections automatically. Use the manual prompt
+below only for additional, project-specific tweaks beyond what the skill resolves:
 
 ```text
-Following the same base structure already present in docs/, update all technical context documents according to this project's specifics.
+Using docs/project-profile.md as the source of truth for concrete choices, refine the docs/ for this project's specifics.
 
 Requirements:
-- Keep the same document set and file names in docs/.
-- Replace generic content with this project's real stack, architecture patterns, coding conventions, and domain terminology.
-- Update backend, frontend, and documentation standards to reflect actual practices used by this team.
-- Update docs/api-spec.yml and docs/data-model.md so they match the real endpoints and entities of this project.
-- Ensure all references are internally consistent and aligned across docs/.
+- Do NOT re-genericize the standards; they intentionally describe roles. Concrete choices belong in docs/project-profile.md.
+- Fill any remaining TBD axes in docs/project-profile.md (deployment target, state management, DI, networking, navigation, persistence, design tokens, test framework) and the concrete-name glossary.
+- Add docs/data-model.md and docs/api-spec.yml only if the app has a domain model / consumes an API; keep them consistent with the profile.
+- Ensure all references are internally consistent and aligned across docs/ and the two agents in ai-specs/agents/.
 - Keep everything in English and make guidance implementation-ready for AI agents.
 ```
 
 ### Maintaining Standards
 
-- **Single Source of Truth**: Always update `base-standards.md` first
+- **Single Source of Truth**: Update core rules in `CLAUDE.md` / `AGENTS.md`; keep project-specific choices in `docs/project-profile.md`
 - **Version Control**: Track changes to standards like code
 - **Team Review**: Standards changes should be reviewed like pull requests
 - **Documentation**: Keep examples current with actual implementation
@@ -325,39 +309,30 @@ Requirements:
 
 ## 📚 Technical context
 
-### Reference Examples (from LIDR Project)
+### Optional Project Documents
 
-The following files are included as **reference examples** from the LIDR project. You should create your own versions tailored to your specific project:
+These documents are **not included by default** — create them only when your project needs them,
+tailored to your domain. Once created, reference them from `docs/project-profile.md` and the
+OpenSpec config:
 
 - **API Specification**: `docs/api-spec.yml` (OpenAPI 3.0 format)
-  - *Create your own API spec documenting your project's endpoints*
-- **Data Models**: `docs/data-model.md` (Database schemas, domain models)
-  - *Document your database structure and domain entities*
-- **Development Guide**: `docs/development_guide.md` (Setup, workflows)
-  - *Write setup instructions specific to your tech stack*
+  - *Create only if the app consumes a documented REST API*
+- **Data Models**: `docs/data-model.md` (domain entities, persistence schema)
+  - *Document your domain entities and any local persistence model*
 
 ## 🤝 Contributing
 
 When contributing to the standards:
 
-1. Update `base-standards.md` (single source of truth)
-2. Test with multiple AI copilots to ensure compatibility
-3. Update generated examples in `changes/` if needed
+1. Update core rules in `CLAUDE.md` / `AGENTS.md` (single source of truth); keep project-specific choices in `docs/project-profile.md`
+2. Keep the standards generic and role-based — concrete stack decisions belong in the profile, not the standards
+3. Test with multiple AI copilots to ensure compatibility
 4. Document breaking changes clearly
 5. Follow the same standards you're defining!
 
 ## 📄 License
 
-Copyright (c) 2025 LIDR.co
 Licensed under the MIT License
-
-**English:**
-
-The content of this repository is part of the AI4Devs program by LIDR.co. If you want to learn to code with AI like the pros and get more templates and resources like these, you can find all the information on the official website: [https://lidr.co/ia-devs](https://lidr.co/ia-devs)
-
-**Español:**
-
-El contenido de este repositorio es parte del programa AI4Devs de LIDR.co. Si quieres aprender a programar con IA como los pros, y obtener más plantillas y recursos como estos, puedes encontrar toda la información en la página oficial: [https://lidr.co/ia-devs](https://lidr.co/ia-devs)
 
 ---
 
@@ -373,7 +348,3 @@ Superpowers project: [obra/superpowers](https://github.com/obra/superpowers/tree
 Additional inspiration/source acknowledgements:
 
 - `code-auditing` skill: inspired by and adapted from [jeffrigby/somepulp-agents](https://github.com/jeffrigby/somepulp-agents/tree/main)
-
-**Made with 🤖 by the LIDR community**
-
-For questions, issues, or suggestions, visit [LIDR.co](https://lidr.co/ia-devs)

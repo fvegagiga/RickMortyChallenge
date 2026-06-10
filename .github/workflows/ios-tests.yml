@@ -44,12 +44,27 @@ jobs:
             -project "RickMortyChallenge.xcodeproj" \
             -scheme "RickMortyChallenge"
 
-      - name: Run Unit + UI Tests
+      - name: Run Unit Tests with Coverage
+        run: |
+          rm -rf TestResults.xcresult
+          xcodebuild test \
+            -project "RickMortyChallenge.xcodeproj" \
+            -scheme "RickMortyChallenge" \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" \
+            -only-testing:RickMortyChallengeTests \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult
+
+      - name: Verify Domain and Data Coverage (90%+)
+        run: python3 scripts/check-domain-data-coverage.py TestResults.xcresult 0.90
+
+      - name: Run UI Tests
         run: |
           xcodebuild test \
             -project "RickMortyChallenge.xcodeproj" \
             -scheme "RickMortyChallenge" \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5"
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" \
+            -only-testing:RickMortyChallengeUITests
 
       - name: Run Screenshot Regression Tests
         run: |

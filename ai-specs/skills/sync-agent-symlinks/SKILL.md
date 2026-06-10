@@ -1,7 +1,7 @@
 ---
 name: sync-agent-symlinks
 description: Analyze and synchronize agent skill exposure after ai-specs skill changes (additions, removals, renames). Use when skills are added/removed in ai-specs and .claude/skills and .cursor/skills must stay aligned through symlinks.
-author: LIDR.co
+author: Fernando Vega
 version: 1.0.0
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: SwiftUI presentation layer standards, best practices, and conventions for iOS Swift projects — including MVVM, ViewState, design system, navigation, reusable components, and UI testing practices.
-globs: ["RickMortyChallenge/Presentation/**/*.swift", "RickMortyChallenge/Core/DesignSystem/**/*.swift", "RickMortyChallenge/Core/Router/**/*.swift", "RickMortyChallengeUITests/**/*.swift"]
+globs: ["**/*.swift"]
 alwaysApply: true
 ---
 
@@ -40,13 +40,28 @@ alwaysApply: true
 
 ## Overview
 
-This document defines standards for the Presentation layer of iOS Swift/SwiftUI projects. The layer follows MVVM with `ViewState<T>` for state management, `AppRouter` for navigation, and a centralized design system. All UI code must be written in SwiftUI; UIKit is only used indirectly (e.g., `UIImage` in the image cache).
+This document defines standards for the Presentation layer of iOS Swift/SwiftUI projects. The layer follows MVVM with a typed `ViewState<T>` for screen state, a single navigation strategy, and a centralized design system. All UI code must be written in SwiftUI; UIKit is only used indirectly (e.g., `UIImage` in an image cache).
+
+> Conventions: throughout this guide, replace the placeholders with your project's real names:
+> `<AppName>` is the app/target/scheme, `<AppName>UITests` is the UI test target,
+> `<Feature>` is a feature/screen group (for example `Products`, `Orders`), and
+> `<Entity>` is the domain entity rendered by that feature.
+
+> **Generic vs project-specific (two-tier model).** This guide defines *principles* and *roles*.
+> The *concrete choices* for a given project — state-management approach (`@Observable` vs
+> `ObservableObject`), navigation strategy, design-token names, image handling, and minimum
+> deployment target — live in **`docs/project-profile.md`**. Concrete type names below (for example
+> `AppRouter`, `Color.DS.*`, `CachedAsyncImageView`) are *illustrative examples* of a role; the
+> binding decision for your project is whatever `project-profile.md` records. The `adapt-standards`
+> skill fills in that profile and prunes sections that do not apply.
 
 ## Technology Stack
 
 - **SwiftUI**: Declarative UI framework for all views and components
-- **Combine**: `@Published` properties in ViewModels; no manual publishers in Views
-- **XCUITest**: End-to-end UI testing
+- **State management**: the **Observation** framework (`@Observable`, iOS 17+) for new projects,
+  or `ObservableObject` + Combine `@Published` for older deployment targets
+  (see [ViewModel Rules](#viewmodel-rules))
+- **XCTest / Swift Testing**: unit testing; **XCUITest** for end-to-end UI flows
 - **SwiftUI Previews**: Live preview for components and screens during development
 
 ## Architecture Overview
@@ -62,27 +77,28 @@ View  ──(reads)──►  ViewState<T>  ──(published by)──►  ViewM
 ```
 
 - **View**: renders state, delegates all logic to ViewModel
-- **ViewModel**: `@MainActor`, `ObservableObject`, owns `@Published` state
+- **ViewModel**: `@MainActor`, observable (`@Observable` or `ObservableObject`), owns the state
 - **ViewState**: typed enum that drives the entire view lifecycle
 
 ### Feature Structure
 
-Each feature lives under `Presentation/[Feature]/`:
+Each feature lives under `Presentation/[Feature]/`. The component file names below are
+illustrative (see `docs/project-profile.md` for the project's actual set):
 
 ```
 Presentation/
-├── Characters/
+├── <FeatureA>/
 │   ├── ViewModels/
-│   │   ├── CharactersListViewModel.swift
-│   │   └── CharacterDetailViewModel.swift
+│   │   ├── <FeatureA>ListViewModel.swift
+│   │   └── <FeatureA>DetailViewModel.swift
 │   └── Views/
-│       ├── CharactersListView.swift
-│       ├── CharacterDetailView.swift
-│       └── CharacterCardView.swift
-├── Episodes/
+│       ├── <FeatureA>ListView.swift
+│       ├── <FeatureA>DetailView.swift
+│       └── <FeatureA>CardView.swift
+├── <FeatureB>/
 │   ├── ViewModels/
 │   └── Views/
-├── Locations/
+├── <FeatureC>/
 │   ├── ViewModels/
 │   └── Views/
 ├── Components/          # Shared reusable components
@@ -118,10 +134,10 @@ Views switch exhaustively on `ViewState` — never use boolean flags like `isLoa
 switch viewModel.viewState {
 case .idle, .loading:
     LoadingView()
-case .success(let characters):
-    characterGrid(characters)
+case .success(let items):
+    itemGrid(items)
 case .empty:
-    EmptyStateView(icon: "person.slash", title: "No Characters Found", subtitle: "Try a different name.")
+    EmptyStateView(icon: "magnifyingglass", title: "No <Feature> Found", subtitle: "Try a different name.")
 case .failure(let error):
     ErrorView(error: error) { Task { await viewModel.refresh() } }
 }
@@ -133,27 +149,69 @@ if viewModel.hasError { ... }
 
 ### ViewModel Rules
 
+Choose **one** state-management approach per project and stay consistent — record the choice in
+`docs/project-profile.md`. New projects on iOS 17+ default to Option A (`@Observable`); older
+deployment targets use Option B (`ObservableObject`). **Every view example in this guide must be
+read through the lens of the chosen option** (property wrappers differ — see the mapping table in
+[Property Wrappers](#property-wrappers)).
+
+> **Binding for this project**: Option B (`ObservableObject` + `@Published`) is the current
+> implementation. iOS 17 is now the deployment target, so **Option A (`@Observable`) is the
+> recommended migration target** for new ViewModels and refactors. Use `@StateObject` /
+> `@EnvironmentObject` in existing code until migrated.
+
+**Option A — Observation framework (`@Observable`, iOS 17+, preferred for new projects):**
+
+> *Not used in this project — migration reference only.*
+
 ```swift
+import Observation
+
 @MainActor
-final class CharactersListViewModel: ObservableObject {
-    @Published private(set) var viewState: ViewState<[CharacterEntity]> = .idle
-    @Published private(set) var isLoadingMore = false
-    @Published var searchText = ""         // Two-way only for search/filter inputs
+@Observable
+final class <Feature>ListViewModel {
+    private(set) var viewState: ViewState<[<Entity>Entity]> = .idle
+    private(set) var isLoadingMore = false
+    var searchText = ""                    // Two-way only for search/filter inputs
 
-    private let getCharactersUseCase: GetCharactersUseCaseProtocol
+    @ObservationIgnored
+    private let get<Entity>ListUseCase: Get<Entity>ListUseCaseProtocol
 
-    init(getCharactersUseCase: GetCharactersUseCaseProtocol) {
-        self.getCharactersUseCase = getCharactersUseCase
+    init(get<Entity>ListUseCase: Get<Entity>ListUseCaseProtocol) {
+        self.get<Entity>ListUseCase = get<Entity>ListUseCase
     }
 }
 ```
 
-Rules:
-- **`@MainActor`**: every ViewModel is `@MainActor` — all `@Published` mutations happen on the main thread automatically
+With `@Observable`, the view owns the ViewModel via `@State` (not `@StateObject`), shared
+instances are injected with `@Environment` (not `@EnvironmentObject`), and dependencies that are
+not observable state are marked `@ObservationIgnored`.
+
+**Option B — `ObservableObject` + Combine (older deployment targets):**
+
+> *Binding for this project — follow this option in all new Presentation layer code.*
+
+```swift
+@MainActor
+final class <Feature>ListViewModel: ObservableObject {
+    @Published private(set) var viewState: ViewState<[<Entity>Entity]> = .idle
+    @Published private(set) var isLoadingMore = false
+    @Published var searchText = ""         // Two-way only for search/filter inputs
+
+    private let get<Entity>ListUseCase: Get<Entity>ListUseCaseProtocol
+
+    init(get<Entity>ListUseCase: Get<Entity>ListUseCaseProtocol) {
+        self.get<Entity>ListUseCase = get<Entity>ListUseCase
+    }
+}
+```
+
+Rules (apply to both options):
+- **`@MainActor`**: every ViewModel is `@MainActor` — all state mutations happen on the main thread automatically
 - **`final`**: ViewModels are always `final` — they are not subclassed
-- **`private(set)`**: all `@Published` properties except user-input fields are `private(set)` — views only read, never write state directly
+- **`private(set)`**: all observed properties except user-input fields are `private(set)` — views only read, never write state directly
 - **Inject via protocol**: inject use cases through the constructor — never instantiate them inside the ViewModel
-- **No `DIContainer` in ViewModels**: ViewModels don't know about `DIContainer`; factories in `DIContainer` wire them up
+- **No composition root in ViewModels**: ViewModels don't know about the DI container/composition root; factories there wire them up and inject only the use cases they need
 - **Task management**: cancel debounce/search tasks on `deinit` or before starting new ones
 
 ```swift
@@ -179,16 +237,21 @@ func onSearchTextChanged() {
 - Extract complex subviews into `@ViewBuilder` computed properties or separate `View` structs
 - Keep `body` under ~30 lines; extract beyond that
 
+The example below uses **Option A (`@Observable`)** wrappers by default in the generic guide.
+**This project uses Option B** — swap per the [Property Wrappers](#property-wrappers) table
+(`@State` → `@StateObject`, `@Environment` → `@EnvironmentObject`). `router` and `container` are
+the project's navigation and composition-root roles (names per `docs/project-profile.md`).
+
 ```swift
-struct CharactersListView: View {
-    @StateObject private var viewModel: CharactersListViewModel
-    @EnvironmentObject private var router: AppRouter
-    @EnvironmentObject private var container: DIContainer
+struct <Feature>ListView: View {
+    @State private var viewModel: <Feature>ListViewModel
+    @Environment(AppRouter.self) private var router
+    @Environment(DIContainer.self) private var container
 
     var body: some View {
-        NavigationStack(path: $router.characterPath) {
+        NavigationStack(path: $router.<feature>Path) {
             contentView
-                .navigationTitle("Characters")
+                .navigationTitle("<Feature>")
                 .task { await viewModel.loadInitial() }
                 .refreshable { await viewModel.refresh() }
         }
@@ -198,7 +261,7 @@ struct CharactersListView: View {
     private var contentView: some View {
         switch viewModel.viewState {
         case .idle, .loading: LoadingView()
-        case .success(let items): characterGrid(items)
+        case .success(let items): itemGrid(items)
         case .empty: EmptyStateView(...)
         case .failure(let error): ErrorView(error: error) { ... }
         }
@@ -207,6 +270,8 @@ struct CharactersListView: View {
 ```
 
 ### Property Wrappers
+
+With `ObservableObject` (Option B):
 
 | Wrapper | Use case |
 |---|---|
@@ -219,48 +284,71 @@ struct CharactersListView: View {
 
 Never use `@ObservedObject` for a ViewModel the view creates — that would lose the object on re-renders. Use `@StateObject` when the view owns the ViewModel.
 
+With the Observation framework (`@Observable`, Option A), the mapping changes:
+
+| ObservableObject | `@Observable` equivalent |
+|---|---|
+| `@StateObject var vm` | `@State var vm` (view owns it) |
+| `@ObservedObject var vm` | plain `let vm` / `var vm` (passed in) |
+| `@EnvironmentObject var x` | `@Environment(X.self) var x` |
+| `@Published var value` | a plain stored property (observed automatically) |
+
+`@State`, `@Binding`, and `@Environment` (system values) work the same in both worlds.
+
 ### Navigation
 
-Navigation uses `AppRouter` with typed route enums and `NavigationStack`.
+Navigation uses **typed routes** (`Hashable` enums) driven through `NavigationStack`, centralized
+in a single navigation strategy. The *concrete* strategy is the project's choice (recorded in
+`docs/project-profile.md`): a lightweight router object, native per-stack `NavigationPath` state, a
+coordinator pattern, or a framework-provided router. Whatever the strategy, the principles are the
+same — routes are typed values, destinations are registered with `.navigationDestination(for:)`,
+and inline `NavigationLink(destination:)` view construction is avoided.
+
+The example below shows one common shape (a lightweight router object):
 
 ```swift
-// Route definition (in AppRouter.swift)
-enum CharacterRoute: Hashable {
+// Route definition — typed, Hashable
+enum <Feature>Route: Hashable {
     case detail(id: Int)
 }
 
+// Example navigation strategy (role: owns navigation state, exposes intent-named push methods)
 @MainActor
-final class AppRouter: ObservableObject {
-    @Published var characterPath = NavigationPath()
+final class AppRouter {
+    var <feature>Path = NavigationPath()
 
-    func pushCharacter(_ route: CharacterRoute) {
-        characterPath.append(route)
+    func push<Feature>(_ route: <Feature>Route) {
+        <feature>Path.append(route)
     }
 }
 
 // Usage in view
-Button { router.pushCharacter(.detail(id: character.id)) } label: { ... }
+Button { router.push<Feature>(.detail(id: item.id)) } label: { ... }
 
 // Destination registration
-.navigationDestination(for: CharacterRoute.self) { route in
+.navigationDestination(for: <Feature>Route.self) { route in
     switch route {
     case .detail(let id):
-        CharacterDetailView(viewModel: container.makeCharacterDetailViewModel(id: id))
+        <Feature>DetailView(viewModel: container.make<Feature>DetailViewModel(id: id))
     }
 }
 ```
 
 Rules:
-- All navigation is driven by `AppRouter` — never use `NavigationLink(destination:)` with inline view construction
-- New features add their route enum and push method to `AppRouter`
-- Never push navigation from ViewModel — navigation is always triggered by user actions in the View
+- All navigation is driven by the project's navigation strategy — never use
+  `NavigationLink(destination:)` with inline view construction
+- New features add their typed route enum and a push method to that strategy
+- Never push navigation from a ViewModel — navigation is always triggered by user actions in the View
 
 ## Reusable Components
 
-Shared components live in `Presentation/Components/`. Never duplicate their logic.
+Shared components live in `Presentation/Components/`. Never duplicate their logic. The components
+below are an **illustrative set** that most apps end up needing — the actual names and which ones
+exist are recorded in `docs/project-profile.md`. The principle is: every recurring UI pattern
+(loading, error, empty, status, cached image…) has exactly one reusable component.
 
 ### `LoadingView`
-Full-screen centered `ProgressView` with the portal green tint. Use for `.idle` and `.loading` states.
+Full-screen centered `ProgressView` with the brand accent tint. Use for `.idle` and `.loading` states.
 
 ### `ErrorView`
 Displays an error message with a retry button. Accepts an `Error` and a retry closure.
@@ -276,20 +364,20 @@ Displays an SF Symbol icon, title, and subtitle. Use for `.empty` state.
 
 ```swift
 EmptyStateView(
-    icon: "person.slash",
-    title: "No Characters Found",
+    icon: "magnifyingglass",
+    title: "No <Feature> Found",
     subtitle: "Try a different name."
 )
 ```
 
 ### `StatusBadgeView`
-Colored pill badge for character alive/dead/unknown status. Uses `Color.DS` semantic colors.
+Colored pill badge for an entity's status (e.g., active/inactive/unknown). Uses `Color.DS` semantic colors.
 
 ### `CachedAsyncImageView`
-Two-level cached image (NSCache + disk). **Always** use this instead of `AsyncImage`.
+Two-level cached image (NSCache + disk). Use this instead of `AsyncImage` when loading remote images that benefit from caching.
 
 ```swift
-CachedAsyncImageView(url: character.imageURL, cacheManager: container.imageCacheManager) { image in
+CachedAsyncImageView(url: item.imageURL, cacheManager: container.imageCacheManager) { image in
     image
         .resizable()
         .aspectRatio(contentMode: .fill)
@@ -301,17 +389,21 @@ CachedAsyncImageView(url: character.imageURL, cacheManager: container.imageCache
 ## Design System
 
 Never hardcode colors, spacing values, or font sizes inline. Always use the design system tokens.
+The token *namespace* and exact token names are the project's choice (recorded in
+`docs/project-profile.md`); the examples below (`Color.DS.*`, `DSSpacing`, `DSTypography`) show one
+common convention. The non-negotiable principle is: **all visual constants come from named tokens,
+never inline literals.**
 
 ### Colors
 
-Colors live in `Core/DesignSystem/DSColors.swift` as `Color.DS` static properties:
+Example: colors live in `Core/DesignSystem/DSColors.swift` as `Color.DS` static properties:
 
 ```swift
-Color.DS.portalGreen      // Primary brand / accent
-Color.DS.portalGreenDim   // Dimmed variant for pressed states
-Color.DS.statusAlive      // CharacterStatus.alive indicator
-Color.DS.statusDead       // CharacterStatus.dead indicator
-Color.DS.statusUnknown    // CharacterStatus.unknown indicator
+Color.DS.brandPrimary     // Primary brand / accent
+Color.DS.brandPrimaryDim  // Dimmed variant for pressed states
+Color.DS.statusActive     // Status indicator (e.g., active)
+Color.DS.statusInactive   // Status indicator (e.g., inactive)
+Color.DS.statusUnknown    // Status indicator (e.g., unknown)
 Color.DS.cardBackground   // List/grid card background
 Color.DS.surfacePrimary   // Screen background
 Color.DS.textPrimary      // Primary label
@@ -346,24 +438,16 @@ DSSpacing.xl   // 32
 
 Typography lives in `Core/DesignSystem/DSTypography.swift`. Use the defined text styles for consistent hierarchy.
 
-### Design System in Widget Extensions
-
-Widget extensions run in a separate process and do not automatically inherit the main app's source files. To use design system tokens in a widget extension, add the relevant files to the widget target's `membershipExceptions` in `project.pbxproj`:
-
-```
-Core/DesignSystem/DSColors.swift,
-Core/DesignSystem/DSSpacing.swift,
-Core/DesignSystem/DSTypography.swift,
-```
-
-This is already configured for `CharacterWidgetExtension`. If a new widget extension is added, repeat this step for its target.
-
 ## Image Handling
 
-- **Always use `CachedAsyncImageView`** — never `AsyncImage` directly
-- Pass `container.imageCacheManager` from the environment — never create a new `ImageCacheManager` in a view
+> Applies only when the app loads remote images. Skip this section (and the image-caching role)
+> if your UI uses only local/asset images.
+
+- **Use the project's cached image component for remote images** (role: `CachedAsyncImageView`) —
+  prefer it over `AsyncImage` directly when caching matters
+- Pass the shared image cache from the environment — never create a new cache instance in a view
 - Use `.task(id: url)` for loading to automatically cancel and restart when the URL changes
-- Provide a placeholder with `Color.DS.cardBackground` so the grid layout is stable before images load
+- Provide a placeholder from a design token so the layout is stable before images load
 
 ## Coding Standards
 
@@ -371,12 +455,12 @@ This is already configured for `CharacterWidgetExtension`. If a new widget exten
 
 | Construct | Convention | Example |
 |---|---|---|
-| Views | PascalCase + `View` suffix | `CharactersListView`, `CharacterCardView` |
-| ViewModels | PascalCase + `ViewModel` suffix | `CharactersListViewModel` |
+| Views | PascalCase + `View` suffix | `<Feature>ListView`, `<Feature>CardView` |
+| ViewModels | PascalCase + `ViewModel` suffix | `<Feature>ListViewModel` |
 | Components | PascalCase + `View` suffix | `LoadingView`, `ErrorView` |
-| `@ViewBuilder` properties | camelCase, noun | `contentView`, `characterGrid` |
+| `@ViewBuilder` properties | camelCase, noun | `contentView`, `itemGrid` |
 | Action handlers | camelCase, verb phrase | `onRetryTapped`, `onSearchTextChanged` |
-| Route enums | PascalCase + `Route` suffix | `CharacterRoute`, `LocationRoute` |
+| Route enums | PascalCase + `Route` suffix | `<FeatureA>Route`, `<FeatureB>Route` |
 
 ### View Composition
 
@@ -385,10 +469,10 @@ Break views into smaller pieces using `@ViewBuilder` private properties or priva
 ```swift
 // Good: extracted subview
 @ViewBuilder
-private var characterGrid: some View { ... }
+private var itemGrid: some View { ... }
 
 // Good: extracted component struct
-private struct CharacterCardView: View { ... }
+private struct <Feature>CardView: View { ... }
 
 // Avoid: deeply nested body with 100+ lines
 var body: some View {
@@ -408,24 +492,29 @@ Prefer `@ViewBuilder` private properties for simple extractions within the same 
 - Prefer `.spring(response:dampingFraction:)` over `.easeInOut` for interactive feel
 
 ```swift
-.animation(.spring(response: 0.45, dampingFraction: 0.8), value: characters.map(\.id))
+.animation(.spring(response: 0.45, dampingFraction: 0.8), value: items.map(\.id))
 ```
 
 ### Accessibility
 
 - All interactive elements need `.accessibilityLabel` when the visual label is non-obvious
-- `Button` labels must be descriptive: `"View \(character.name) details"`, not `"Tap"`
+- `Button` labels must be descriptive: `"View \(item.name) details"`, not `"Tap"`
 - `Image` with informational content needs `.accessibilityLabel`; decorative images use `.accessibilityHidden(true)`
 - Minimum tap target: 44×44 pt — use `.frame(minWidth: 44, minHeight: 44)` for small controls
 
 ## Testing Standards
 
+ViewModel unit tests follow the same framework choice as the rest of the project —
+**Swift Testing** (`@Test`/`#expect`) or **XCTest** — as described in
+`docs/domain-data-standards.md`. End-to-end UI flows use **XCUITest** regardless of the unit
+framework chosen.
+
 ### UI Tests with XCUITest
 
-UI tests live in `RickMortyChallengeUITests/`. They test real navigation flows against the running app.
+UI tests live in `<AppName>UITests/`. They test real navigation flows against the running app.
 
 ```swift
-final class CharactersListUITests: XCTestCase {
+final class <Feature>ListUITests: XCTestCase {
     var app: XCUIApplication!
 
     override func setUp() {
@@ -435,7 +524,7 @@ final class CharactersListUITests: XCTestCase {
         app.launch()
     }
 
-    func testCharactersList_displaysCharacters() {
+    func test<Feature>List_displaysItems() {
         let collectionView = app.scrollViews.firstMatch
         XCTAssertTrue(collectionView.waitForExistence(timeout: 5))
     }
@@ -453,12 +542,12 @@ Every view and reusable component must have a `#Preview` (or `PreviewProvider` f
 
 ```swift
 #Preview {
-    CharacterCardView(character: MockDataFactory.makeCharacterEntity(), cacheManager: MockImageCacheManager())
+    <Feature>CardView(item: MockDataFactory.make<Entity>Entity(), cacheManager: MockImageCacheManager())
         .padding()
 }
 
 #Preview("Empty State") {
-    EmptyStateView(icon: "person.slash", title: "No Results", subtitle: "Try again.")
+    EmptyStateView(icon: "magnifyingglass", title: "No Results", subtitle: "Try again.")
 }
 ```
 
@@ -472,5 +561,11 @@ Rules:
 - **`LazyVGrid` / `LazyVStack`**: always use lazy containers for lists — never `VStack` + `ForEach` for unbounded data
 - **`.task(id:)`**: use the `id` parameter to cancel and restart async work when a dependency changes (e.g., URL)
 - **Avoid re-renders**: only `@Published` properties that the view actually reads should be in the ViewModel — split into multiple ViewModels if a view reads only a subset of a large model
-- **`@StateObject` vs `@ObservedObject`**: use `@StateObject` for ViewModels the view creates; use `@ObservedObject` for ones passed in — getting this wrong causes random re-initialization
-- **Image loading**: `CachedAsyncImageView` uses a two-level cache (memory + disk) — never bypass it by loading images manually in a view
+- **ViewModel ownership**: the view that *creates* a ViewModel owns it (`@State` with `@Observable`, or `@StateObject` with `ObservableObject`); a ViewModel *passed in* is not owned (plain property, or `@ObservedObject`) — getting this wrong causes random re-initialization
+- **Image loading**: the cached image component uses a two-level cache (memory + disk) — never bypass it by loading images manually in a view
+
+## Related: Advanced & Optional Topics
+
+See `docs/advanced-topics.md` for optional topics that also touch the Presentation layer when they
+apply — splitting features into Swift packages (**SPM modularization**) and adopting the
+**Swift 6 language mode / strict concurrency** for `@MainActor` ViewModels and `Sendable` state.

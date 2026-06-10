@@ -1,7 +1,7 @@
 ---
 name: enrich-us
 description: Analyze and enhance user stories with complete, implementation-ready technical detail from direct ticket input or Jira.
-author: LIDR.co
+author: Fernando Vega
 version: 1.0.0
 ---
 # enrich-us Skill
@@ -31,7 +31,12 @@ Follow these steps:
 6. Output format must always include:
    - `## Original`
    - `## Enhanced`
-7. Jira write-back is optional and only applies in Jira mode:
+7. Persist output (Direct input mode only):
+   - When **not** using Jira (i.e., Direct input mode), save the generated output to `docs/current-task/task-definition.md`.
+   - Create the file if it does not exist; overwrite it completely if a previous version exists.
+   - The file content must be the full output from step 6 (the `## Original` and `## Enhanced` sections).
+   - This step does not apply in Jira mode.
+8. Jira write-back is optional and only applies in Jira mode:
    - Update the Jira ticket by appending the enhanced content after the original content, with clear `h2` sections `[original]` and `[enhanced]` and readable formatting (lists/code snippets when useful).
    - If ticket status is `To refine`, move it to `Pending refinement validation`.
 
@@ -39,3 +44,4 @@ Follow these steps:
 
 - Do not require Jira when the user already provided full ticket content directly.
 - If input is ambiguous (for example, user gives a short reference without content), ask whether to resolve via Jira or request the full ticket text.
+- In Direct input mode, the canonical output location is `docs/current-task/task-definition.md` (created if missing, overwritten if present).

@@ -1,37 +1,29 @@
-import XCTest
 import Network
+import Testing
 @testable import RickMortyChallenge
 
-@MainActor
-final class CharactersListViewModelTests: XCTestCase {
-    var sut: CharactersListViewModel!
-    var mockRepository: MockCharacterRepository!
-    var useCase: GetCharactersUseCase!
+@Suite @MainActor
+struct CharactersListViewModelTests {
+    let sut: CharactersListViewModel
+    let mockRepository: MockCharacterRepository
 
-    override func setUp() {
-        super.setUp()
+    init() {
         mockRepository = MockCharacterRepository()
-        useCase = GetCharactersUseCase(repository: mockRepository)
+        let useCase = GetCharactersUseCase(repository: mockRepository)
         sut = CharactersListViewModel(getCharactersUseCase: useCase)
     }
 
-    override func tearDown() {
-        sut = nil
-        useCase = nil
-        mockRepository = nil
-        super.tearDown()
-    }
-
-    // MARK: - loadInitial
-
-    func testLoadInitial_startsFromIdleState() async {
-        // Verify initial state is .idle before loading
-        if case .idle = sut.viewState { /* pass */ } else {
-            XCTFail("Expected .idle initial state")
+    @Test
+    func loadInitial_startsFromIdleState() async {
+        if case .idle = sut.viewState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected .idle initial state")
         }
     }
 
-    func testLoadInitial_withSuccessfulResponse_setsSuccessState() async {
+    @Test
+    func loadInitial_withSuccessfulResponse_setsSuccessState() async {
         let characters = MockDataFactory.makeCharacterEntities(count: 3)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: characters, hasNextPage: true)
@@ -40,36 +32,43 @@ final class CharactersListViewModelTests: XCTestCase {
         await sut.loadInitial()
 
         if case .success(let loaded) = sut.viewState {
-            XCTAssertEqual(loaded.count, 3)
-            XCTAssertEqual(loaded.first?.name, "Character 1")
+            #expect(loaded.count == 3)
+            #expect(loaded.first?.name == "Character 1")
         } else {
-            XCTFail("Expected .success state, got \(sut.viewState)")
+            Issue.record("Expected .success state, got \(sut.viewState)")
         }
     }
 
-    func testLoadInitial_withEmptyResponse_setsEmptyState() async {
+    @Test
+    func loadInitial_withEmptyResponse_setsEmptyState() async {
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: [], hasNextPage: false)
         )
 
         await sut.loadInitial()
 
-        if case .empty = sut.viewState { /* pass */ } else {
-            XCTFail("Expected .empty state")
+        if case .empty = sut.viewState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected .empty state")
         }
     }
 
-    func testLoadInitial_withNetworkError_setsFailureState() async {
+    @Test
+    func loadInitial_withNetworkError_setsFailureState() async {
         mockRepository.fetchCharactersResult = .failure(NetworkError.noInternetConnection)
 
         await sut.loadInitial()
 
-        if case .failure = sut.viewState { /* pass */ } else {
-            XCTFail("Expected .failure state")
+        if case .failure = sut.viewState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected .failure state")
         }
     }
 
-    func testLoadInitial_whenCalledTwice_onlyFetchesOnce() async {
+    @Test
+    func loadInitial_whenCalledTwice_onlyFetchesOnce() async {
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: MockDataFactory.makeCharacterEntities(count: 1))
         )
@@ -77,12 +76,11 @@ final class CharactersListViewModelTests: XCTestCase {
         await sut.loadInitial()
         await sut.loadInitial()
 
-        XCTAssertEqual(mockRepository.fetchCharactersCallCount, 1)
+        #expect(mockRepository.fetchCharactersCallCount == 1)
     }
 
-    // MARK: - refresh
-
-    func testRefresh_resetsAndFetchesAgain() async {
+    @Test
+    func refresh_resetsAndFetchesAgain() async {
         let firstBatch = MockDataFactory.makeCharacterEntities(count: 2)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: firstBatch)
@@ -96,16 +94,15 @@ final class CharactersListViewModelTests: XCTestCase {
         await sut.refresh()
 
         if case .success(let loaded) = sut.viewState {
-            XCTAssertEqual(loaded.count, 5)
+            #expect(loaded.count == 5)
         } else {
-            XCTFail("Expected .success after refresh")
+            Issue.record("Expected .success after refresh")
         }
-        XCTAssertEqual(mockRepository.fetchCharactersCallCount, 2)
+        #expect(mockRepository.fetchCharactersCallCount == 2)
     }
 
-    // MARK: - pagination
-
-    func testLoadMoreIfNeeded_whenCalledWithLastItem_fetchesNextPage() async {
+    @Test
+    func loadMoreIfNeeded_whenCalledWithLastItem_fetchesNextPage() async {
         let firstPage = MockDataFactory.makeCharacterEntities(count: 3)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: firstPage, hasNextPage: true)
@@ -121,16 +118,17 @@ final class CharactersListViewModelTests: XCTestCase {
 
         await sut.loadMoreIfNeeded(currentItem: firstPage.last!)
 
-        XCTAssertEqual(mockRepository.fetchCharactersCallCount, 2)
-        XCTAssertEqual(mockRepository.lastFetchPage, 2)
+        #expect(mockRepository.fetchCharactersCallCount == 2)
+        #expect(mockRepository.lastFetchPage == 2)
         if case .success(let all) = sut.viewState {
-            XCTAssertEqual(all.count, 6)
+            #expect(all.count == 6)
         } else {
-            XCTFail("Expected .success with combined pages")
+            Issue.record("Expected .success with combined pages")
         }
     }
 
-    func testLoadMoreIfNeeded_whenNotLastItem_doesNotFetch() async {
+    @Test
+    func loadMoreIfNeeded_whenNotLastItem_doesNotFetch() async {
         let items = MockDataFactory.makeCharacterEntities(count: 3)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: items, hasNextPage: true)
@@ -140,6 +138,6 @@ final class CharactersListViewModelTests: XCTestCase {
 
         await sut.loadMoreIfNeeded(currentItem: items[0])
 
-        XCTAssertEqual(mockRepository.fetchCharactersCallCount, callCountAfterInitial)
+        #expect(mockRepository.fetchCharactersCallCount == callCountAfterInitial)
     }
 }

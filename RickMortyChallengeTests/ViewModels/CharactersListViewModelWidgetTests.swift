@@ -1,15 +1,14 @@
-import XCTest
 import Network
+import Testing
 @testable import RickMortyChallenge
 
-@MainActor
-final class CharactersListViewModelWidgetTests: XCTestCase {
-    var sut: CharactersListViewModel!
-    var mockRepository: MockCharacterRepository!
-    var mockStore: MockAppGroupStore!
+@Suite @MainActor
+struct CharactersListViewModelWidgetTests {
+    let sut: CharactersListViewModel
+    let mockRepository: MockCharacterRepository
+    let mockStore: MockAppGroupStore
 
-    override func setUp() {
-        super.setUp()
+    init() {
         mockRepository = MockCharacterRepository()
         mockStore = MockAppGroupStore()
         sut = CharactersListViewModel(
@@ -18,16 +17,8 @@ final class CharactersListViewModelWidgetTests: XCTestCase {
         )
     }
 
-    override func tearDown() {
-        sut = nil
-        mockRepository = nil
-        mockStore = nil
-        super.tearDown()
-    }
-
-    // MARK: - Widget snapshot write
-
-    func testLoadInitial_onSuccess_writesSnapshotToStore() async {
+    @Test
+    func loadInitial_onSuccess_writesSnapshotToStore() async {
         let characters = MockDataFactory.makeCharacterEntities(count: 5)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: characters)
@@ -35,10 +26,11 @@ final class CharactersListViewModelWidgetTests: XCTestCase {
 
         await sut.loadInitial()
 
-        XCTAssertEqual(mockStore.writeSnapshotCallCount, 1)
+        #expect(mockStore.writeSnapshotCallCount == 1)
     }
 
-    func testLoadInitial_onSuccess_writesAtMost20Characters() async {
+    @Test
+    func loadInitial_onSuccess_writesAtMost20Characters() async {
         let characters = MockDataFactory.makeCharacterEntities(count: 25)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: characters)
@@ -46,10 +38,11 @@ final class CharactersListViewModelWidgetTests: XCTestCase {
 
         await sut.loadInitial()
 
-        XCTAssertEqual(mockStore.writtenSnapshot?.count, 20)
+        #expect(mockStore.writtenSnapshot?.count == 20)
     }
 
-    func testLoadInitial_onSuccess_withPoolSmallerThan20_writesAllCharacters() async {
+    @Test
+    func loadInitial_onSuccess_withPoolSmallerThan20_writesAllCharacters() async {
         let characters = MockDataFactory.makeCharacterEntities(count: 5)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: characters)
@@ -57,18 +50,20 @@ final class CharactersListViewModelWidgetTests: XCTestCase {
 
         await sut.loadInitial()
 
-        XCTAssertEqual(mockStore.writtenSnapshot?.count, 5)
+        #expect(mockStore.writtenSnapshot?.count == 5)
     }
 
-    func testLoadInitial_onFailure_doesNotWriteSnapshot() async {
+    @Test
+    func loadInitial_onFailure_doesNotWriteSnapshot() async {
         mockRepository.fetchCharactersResult = .failure(NetworkError.noInternetConnection)
 
         await sut.loadInitial()
 
-        XCTAssertEqual(mockStore.writeSnapshotCallCount, 0)
+        #expect(mockStore.writeSnapshotCallCount == 0)
     }
 
-    func testRefresh_onSuccess_writesNewSnapshot() async {
+    @Test
+    func refresh_onSuccess_writesNewSnapshot() async {
         let first = MockDataFactory.makeCharacterEntities(count: 3)
         mockRepository.fetchCharactersResult = .success(MockDataFactory.makePagedResult(items: first))
         await sut.loadInitial()
@@ -77,10 +72,11 @@ final class CharactersListViewModelWidgetTests: XCTestCase {
         mockRepository.fetchCharactersResult = .success(MockDataFactory.makePagedResult(items: second))
         await sut.refresh()
 
-        XCTAssertEqual(mockStore.writeSnapshotCallCount, 2)
+        #expect(mockStore.writeSnapshotCallCount == 2)
     }
 
-    func testLoadInitial_onSuccess_snapshotIncludesCharacterStatus() async {
+    @Test
+    func loadInitial_onSuccess_snapshotIncludesCharacterStatus() async {
         let characters = [MockDataFactory.makeCharacterEntity(id: 1, name: "Rick", status: .alive)]
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: characters)
@@ -88,10 +84,11 @@ final class CharactersListViewModelWidgetTests: XCTestCase {
 
         await sut.loadInitial()
 
-        XCTAssertEqual(mockStore.writtenSnapshot?.first?.status, CharacterStatus.alive.rawValue)
+        #expect(mockStore.writtenSnapshot?.first?.status == CharacterStatus.alive.rawValue)
     }
 
-    func testLoadInitial_withNilStore_doesNotCrash() async {
+    @Test
+    func loadInitial_withNilStore_doesNotCrash() async {
         let sutWithoutStore = CharactersListViewModel(
             getCharactersUseCase: GetCharactersUseCase(repository: mockRepository),
             appGroupStore: nil

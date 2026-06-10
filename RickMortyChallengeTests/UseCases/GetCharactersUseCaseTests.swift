@@ -1,25 +1,19 @@
-import XCTest
 import Network
+import Testing
 @testable import RickMortyChallenge
 
-@MainActor
-final class GetCharactersUseCaseTests: XCTestCase {
-    var sut: GetCharactersUseCase!
-    var mockRepository: MockCharacterRepository!
+@Suite @MainActor
+struct GetCharactersUseCaseTests {
+    let sut: GetCharactersUseCase
+    let mockRepository: MockCharacterRepository
 
-    override func setUp() {
-        super.setUp()
+    init() {
         mockRepository = MockCharacterRepository()
         sut = GetCharactersUseCase(repository: mockRepository)
     }
 
-    override func tearDown() {
-        sut = nil
-        mockRepository = nil
-        super.tearDown()
-    }
-
-    func testExecute_delegatesToRepositoryWithCorrectParameters() async throws {
+    @Test
+    func execute_delegatesToRepositoryWithCorrectParameters() async throws {
         let characters = MockDataFactory.makeCharacterEntities(count: 3)
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: characters, hasNextPage: true)
@@ -27,42 +21,40 @@ final class GetCharactersUseCaseTests: XCTestCase {
 
         _ = try await sut.execute(page: 2, name: "Rick")
 
-        XCTAssertEqual(mockRepository.fetchCharactersCallCount, 1)
-        XCTAssertEqual(mockRepository.lastFetchPage, 2)
-        XCTAssertEqual(mockRepository.lastFetchName, "Rick")
+        #expect(mockRepository.fetchCharactersCallCount == 1)
+        #expect(mockRepository.lastFetchPage == 2)
+        #expect(mockRepository.lastFetchName == "Rick")
     }
 
-    func testExecute_returnsPagedResultFromRepository() async throws {
+    @Test
+    func execute_returnsPagedResultFromRepository() async throws {
         let characters = MockDataFactory.makeCharacterEntities(count: 5)
         let expected = MockDataFactory.makePagedResult(items: characters, hasNextPage: true)
         mockRepository.fetchCharactersResult = .success(expected)
 
         let result = try await sut.execute(page: 1, name: nil)
 
-        XCTAssertEqual(result.items.count, 5)
-        XCTAssertTrue(result.hasNextPage)
+        #expect(result.items.count == 5)
+        #expect(result.hasNextPage)
     }
 
-    func testExecute_whenRepositoryThrows_propagatesError() async {
+    @Test
+    func execute_whenRepositoryThrows_propagatesError() async {
         mockRepository.fetchCharactersResult = .failure(NetworkError.notFound)
 
-        do {
-            _ = try await sut.execute(page: 1, name: nil)
-            XCTFail("Expected error to be thrown")
-        } catch let error as NetworkError {
-            XCTAssertEqual(error, NetworkError.notFound)
-        } catch {
-            XCTFail("Unexpected error type: \(error)")
+        await #expect(throws: NetworkError.notFound) {
+            try await sut.execute(page: 1, name: nil)
         }
     }
 
-    func testExecute_withNilName_passesNilToRepository() async throws {
+    @Test
+    func execute_withNilName_passesNilToRepository() async throws {
         mockRepository.fetchCharactersResult = .success(
             MockDataFactory.makePagedResult(items: [])
         )
 
         _ = try await sut.execute(page: 1, name: nil)
 
-        XCTAssertNil(mockRepository.lastFetchName)
+        #expect(mockRepository.lastFetchName == nil)
     }
 }

@@ -1,6 +1,6 @@
 ---
 description: iOS Data and Domain layer standards, best practices, and conventions for Swift/SwiftUI projects using Clean Architecture — including repository pattern, use cases, networking, dependency injection, and testing practices.
-globs: ["RickMortyChallenge/**/*.swift", "RickMortyChallengeTests/**/*.swift", "packages/**/*.swift"]
+globs: ["**/*.swift"]
 alwaysApply: true
 ---
 
@@ -10,6 +10,7 @@ alwaysApply: true
 
 - [Overview](#overview)
 - [Technology Stack](#technology-stack)
+- [Applicability (Core vs Optional)](#applicability-core-vs-optional)
 - [Architecture Overview](#architecture-overview)
   - [Clean Architecture Layers](#clean-architecture-layers)
   - [Project Structure](#project-structure)
@@ -37,6 +38,7 @@ alwaysApply: true
   - [Coverage Requirements](#coverage-requirements)
 - [Performance Best Practices](#performance-best-practices)
 - [Security Best Practices](#security-best-practices)
+- [Related: Advanced & Optional Topics](#related-advanced--optional-topics)
 
 ---
 
@@ -44,14 +46,56 @@ alwaysApply: true
 
 This document defines standards for the Data and Domain layers of iOS Swift/SwiftUI projects. The architecture follows Clean Architecture principles with strict separation between Domain (pure business logic), Data (network/persistence implementations), and Core (shared infrastructure). All code must be written in Swift with full type safety.
 
+> Conventions: throughout this guide, replace the placeholders with your project's real names:
+> `<AppName>` is the app/target/scheme, `<AppName>Tests` is the unit test target,
+> `<Entity>` is a domain entity (for example `Product`, `User`, `Order`), and
+> `<Feature>` is a presentation feature/screen group.
+
+> **Generic vs project-specific (two-tier model).** This document defines *principles* and
+> *roles* that hold for essentially any Clean Architecture Swift app. The *concrete choices* for a
+> given project — which networking abstraction, dependency-injection mechanism, navigation
+> strategy, persistence, design tokens, deployment target, and test framework — live in
+> **`docs/project-profile.md`**. Where this guide names a concrete type (for example a
+> `DIContainer`, a `Network` package, or a `CachedAsyncImageView`), treat it as an *illustrative
+> example*: the binding decision for your project is whatever `project-profile.md` records.
+> When you import these standards into a project, run the `adapt-standards` skill first — it fills
+> in `project-profile.md` (analyzing an existing codebase, or applying recommended defaults for a
+> new one) and prunes any section that does not apply.
+
 ## Technology Stack
 
 - **Swift**: Primary language — strict typing, value semantics, Sendable conformance
 - **SwiftUI**: UI framework (see `docs/presentation-standards.md` for Presentation layer standards)
 - **async/await**: Concurrency model for all asynchronous operations
-- **URLSession**: HTTP networking via the `Network` local Swift package
-- **XCTest**: Unit and integration testing framework
+- **Networking**: HTTP through a networking abstraction behind a protocol — `URLSession` directly,
+  or a third-party client if the project adopted one *(only when the app consumes a remote API; the
+  concrete choice is recorded in `docs/project-profile.md`)*
+- **Testing**: a single unit/integration framework per target — **Swift Testing** or **XCTest**
+  (see [Testing Standards](#testing-standards))
 - **Swift Package Manager**: Dependency and local package management
+
+## Applicability (Core vs Optional)
+
+This guide describes a complete, opinionated reference app. Not every concern applies to
+every project — adapt it to your domain. Treat the following as a baseline:
+
+- **Always apply**: Clean Architecture layering and the dependency rule, type safety,
+  `async/await`, `Sendable`, naming conventions, error handling, testing discipline.
+- **Apply when relevant** (skip or replace if your project does not need them):
+  - **Networking abstraction / DTOs / Mappers / endpoint catalog** — only when consuming a remote
+    API. A fully offline app may have no Data network layer at all.
+  - **Paginated result type / pagination** — only for paginated endpoints or large collections.
+  - **Image caching component** — only when the app loads remote images.
+  - **Persistence (SwiftData / Core Data / Keychain)** — only when the app stores data
+    locally (see `docs/advanced-topics.md`).
+  - **Retry / transient-failure handling** — only when transient network failures matter.
+
+When a concern does not apply, do not introduce its abstractions just to follow the template.
+The `adapt-standards` skill removes the non-applicable ones based on `docs/project-profile.md`.
+
+Advanced and optional topics — **SPM modularization**, **local persistence**, and
+**Swift 6 strict concurrency** — live in `docs/advanced-topics.md` to keep these core standards
+focused. Apply them only when your project needs them.
 
 ## Architecture Overview
 
@@ -63,9 +107,9 @@ This document defines standards for the Data and Domain layers of iOS Swift/Swif
 ├─────────────────────────────────┤
 │           Domain                │  Entities · Repository Protocols · Use Cases
 ├─────────────────────────────────┤
-│            Data                 │  DTOs · Mappers · RepositoryImpl · Network
+│            Data                 │  DTOs · Mappers · RepositoryImpl · Networking
 ├─────────────────────────────────┤
-│            Core                 │  DI · ImageCache · Extensions · DesignSystem
+│            Core                 │  Composition root · Shared infra · Design system
 └─────────────────────────────────┘
 ```
 
@@ -73,36 +117,38 @@ This document defines standards for the Data and Domain layers of iOS Swift/Swif
 
 ### Project Structure
 
+The layout below is one **illustrative** organization of the four layers. The folder names, and
+which optional pieces exist, depend on the project — record the actual structure in
+`docs/project-profile.md`. What is *not* negotiable is the layer separation and the dependency
+rule; everything labeled with a concrete file name is an example of the *role* it plays.
+
 ```
-RickMortyChallenge/
-├── Core/
-│   ├── DI/
-│   │   └── DIContainer.swift          # Central dependency container
-│   ├── DesignSystem/
-│   │   ├── DSColors.swift
-│   │   ├── DSSpacing.swift
-│   │   └── DSTypography.swift
+<AppName>/
+├── Core/                              # Cross-cutting infrastructure
+│   ├── DI/                            # Composition root (role: where dependencies are wired)
+│   ├── DesignSystem/                  # Design tokens (colors, spacing, typography)
 │   ├── Extensions/
-│   │   └── View+Extensions.swift
-│   ├── Router/
-│   │   └── AppRouter.swift
-│   └── Utilities/
-│       └── ImageCacheManager.swift
+│   ├── Navigation/                    # Navigation strategy (role: routing between screens)
+│   └── Utilities/                     # e.g. an image-loading/caching component, if needed
 ├── Data/
-│   ├── DTOs/                          # Decodable network models
+│   ├── DTOs/                          # Decodable network/persistence models
 │   ├── Mappers/                       # DTO → Entity transformations
-│   ├── Network/
-│   │   └── APIEndpoint.swift
+│   ├── Network/                       # Networking abstraction + endpoint definitions
 │   └── Repositories/                  # Protocol implementations
 ├── Domain/
 │   ├── Entities/                      # Pure Swift value types
-│   ├── Repositories/                  # Protocol contracts + PagedResult
+│   ├── Repositories/                  # Protocol contracts (+ paginated result type if used)
 │   └── UseCases/                      # Single-responsibility interactors
 └── Presentation/
     └── [Feature]/
         ├── ViewModels/
         └── Views/
 ```
+
+> For larger codebases you can promote these layers/features to **Swift Package Manager modules**
+> so the dependency rule is enforced by the compiler. See the *Modularization Variant (SPM)* in
+> `docs/advanced-topics.md`. Whether a project is a single target or modularized is recorded in
+> `docs/project-profile.md`.
 
 ## Domain Layer
 
@@ -114,24 +160,23 @@ Entities are value types (`struct`) representing core domain concepts. They must
 
 ```swift
 // Good
-struct CharacterEntity: Identifiable, Sendable {
+struct <Entity>Entity: Identifiable, Sendable {
     let id: Int
     let name: String
-    let status: CharacterStatus
-    let species: String
-    let type: String
-    let gender: CharacterGender
+    let status: <Entity>Status
+    let category: String
+    let kind: <Entity>Kind
     let originName: String
     let currentLocationName: String
     let imageURL: URL?
-    let episodeURLs: [String]
+    let relatedURLs: [String]
     let created: Date
 }
 
 // Avoid: class with mutable state, or coupling to network/persistence types
 ```
 
-- Use `enum` for finite state types (e.g., `CharacterStatus`, `CharacterGender`)
+- Use `enum` for finite state types (e.g., `<Entity>Status`, `<Entity>Kind`)
 - All enum cases must be exhaustively handled — never use `default:` to suppress warnings
 - Entities must not contain business logic that belongs to Use Cases
 
@@ -140,15 +185,15 @@ struct CharacterEntity: Identifiable, Sendable {
 Repository protocols define the contract between Domain and Data. They live in `Domain/Repositories/`.
 
 ```swift
-protocol CharacterRepositoryProtocol {
-    func fetchCharacters(page: Int, name: String?) async throws -> PagedResult<CharacterEntity>
-    func fetchCharacterDetail(id: Int) async throws -> CharacterEntity
+protocol <Entity>RepositoryProtocol {
+    func fetch<Entity>List(page: Int, name: String?) async throws -> PagedResult<<Entity>Entity>
+    func fetch<Entity>Detail(id: Int) async throws -> <Entity>Entity
 }
 ```
 
 Rules:
-- One protocol per aggregate root (Character, Location, Episode)
-- Method names must describe intent, not implementation (`fetchCharacters`, not `getFromAPI`)
+- One protocol per aggregate root (e.g., `<EntityA>`, `<EntityB>`, `<EntityC>`)
+- Method names must describe intent, not implementation (`fetch<Entity>List`, not `getFromAPI`)
 - Paginated results use `PagedResult<T>` — never return raw arrays from paginated endpoints
 - All methods are `async throws` — never use completion handlers
 
@@ -165,25 +210,25 @@ struct PagedResult<T: Sendable>: Sendable {
 Use Cases encapsulate a single business operation. Each has one `execute` method.
 
 ```swift
-protocol GetCharactersUseCaseProtocol {
-    func execute(page: Int, name: String?) async throws -> PagedResult<CharacterEntity>
+protocol Get<Entity>ListUseCaseProtocol {
+    func execute(page: Int, name: String?) async throws -> PagedResult<<Entity>Entity>
 }
 
-final class GetCharactersUseCase: GetCharactersUseCaseProtocol {
-    private let repository: CharacterRepositoryProtocol
+final class Get<Entity>ListUseCase: Get<Entity>ListUseCaseProtocol {
+    private let repository: <Entity>RepositoryProtocol
 
-    init(repository: CharacterRepositoryProtocol) {
+    init(repository: <Entity>RepositoryProtocol) {
         self.repository = repository
     }
 
-    func execute(page: Int, name: String?) async throws -> PagedResult<CharacterEntity> {
-        try await repository.fetchCharacters(page: page, name: name)
+    func execute(page: Int, name: String?) async throws -> PagedResult<<Entity>Entity> {
+        try await repository.fetch<Entity>List(page: page, name: name)
     }
 }
 ```
 
 Rules:
-- One class per use case, named `[Verb][Noun]UseCase` (e.g., `GetCharactersUseCase`, `GetCharacterDetailUseCase`)
+- One class per use case, named `[Verb][Noun]UseCase` (e.g., `Get<Entity>ListUseCase`, `Get<Entity>DetailUseCase`)
 - Always define a protocol alongside the class to allow test injection
 - Inject repository via constructor — never instantiate repositories inside use cases
 - Use Cases must not contain UI logic or reference ViewModels
@@ -195,17 +240,16 @@ Rules:
 DTOs are `Decodable` structs that map 1:1 to the network response format.
 
 ```swift
-struct CharacterDTO: Decodable {
+struct <Entity>DTO: Decodable {
     let id: Int
     let name: String
     let status: String
-    let species: String
-    let type: String
-    let gender: String
+    let category: String
+    let kind: String
     let origin: LocationReferenceDTO
     let location: LocationReferenceDTO
     let image: String
-    let episode: [String]
+    let related: [String]
     let created: String
 }
 ```
@@ -221,17 +265,17 @@ Rules:
 Mappers transform DTOs into Domain Entities. They encapsulate all parsing logic (date formatting, URL construction, enum mapping).
 
 ```swift
-final class CharacterMapper {
-    func map(_ dto: CharacterDTO) -> CharacterEntity {
-        CharacterEntity(
+final class <Entity>Mapper {
+    func map(_ dto: <Entity>DTO) -> <Entity>Entity {
+        <Entity>Entity(
             id: dto.id,
             name: dto.name,
-            status: CharacterStatus(rawValue: dto.status.lowercased()) ?? .unknown,
+            status: <Entity>Status(rawValue: dto.status.lowercased()) ?? .unknown,
             // ...
         )
     }
 
-    func map(_ dtos: [CharacterDTO]) -> [CharacterEntity] {
+    func map(_ dtos: [<Entity>DTO]) -> [<Entity>Entity] {
         dtos.map { map($0) }
     }
 }
@@ -248,18 +292,18 @@ Rules:
 Implementations wire together the network service and mapper to satisfy the protocol.
 
 ```swift
-final class CharacterRepositoryImpl: CharacterRepositoryProtocol {
+final class <Entity>RepositoryImpl: <Entity>RepositoryProtocol {
     private let networkService: NetworkServiceProtocol
-    private let mapper: CharacterMapper
+    private let mapper: <Entity>Mapper
 
-    init(networkService: NetworkServiceProtocol, mapper: CharacterMapper) {
+    init(networkService: NetworkServiceProtocol, mapper: <Entity>Mapper) {
         self.networkService = networkService
         self.mapper = mapper
     }
 
-    func fetchCharacters(page: Int, name: String?) async throws -> PagedResult<CharacterEntity> {
-        let response: PaginatedResponseDTO<CharacterDTO> = try await networkService.fetch(
-            APIEndpoint.characters(page: page, name: name)
+    func fetch<Entity>List(page: Int, name: String?) async throws -> PagedResult<<Entity>Entity> {
+        let response: PaginatedResponseDTO<<Entity>DTO> = try await networkService.fetch(
+            APIEndpoint.<entity>List(page: page, name: name)
         )
         return PagedResult(
             items: mapper.map(response.results),
@@ -273,77 +317,89 @@ final class CharacterRepositoryImpl: CharacterRepositoryProtocol {
 Rules:
 - Never expose DTOs outside the repository implementation
 - Propagate errors upward with `throws` — never swallow errors silently
-- Repository implementations are `final` and injected via `DIContainer`
+- Repository implementations are `final` and wired through the composition root
 
 ### Networking
 
-The `Network` local Swift package contains `NetworkServiceProtocol` and `NetworkService`. All HTTP calls go through this protocol.
+> Applies only when the app consumes a remote API. Offline or local-only apps can omit this
+> section entirely along with DTOs, mappers, and endpoint definitions.
+
+All HTTP access goes through a **networking abstraction defined as a protocol** (role:
+`NetworkServiceProtocol`). The concrete implementation — `URLSession` directly, a thin in-house
+client, or a third-party library — is the project's choice, recorded in `docs/project-profile.md`.
+The repositories depend only on the protocol, never on the concrete client, so the implementation
+can be swapped or mocked freely.
+
+Endpoints are defined in a **single type-safe place** (role: an `APIEndpoint` enum or equivalent
+request builder), never as raw URL strings scattered across repositories:
 
 ```swift
-// APIEndpoint defines all endpoints as a typed enum
+// Example: endpoints as a typed enum (one illustrative shape of the "endpoint catalog" role)
 enum APIEndpoint {
-    case characters(page: Int, name: String?)
-    case characterDetail(id: Int)
-    case locations(page: Int)
-    case episodes(page: Int)
+    case <entity>List(page: Int, name: String?)
+    case <entity>Detail(id: Int)
+    case <otherEntity>List(page: Int)
 }
 ```
 
 Rules:
-- New endpoints must be added to `APIEndpoint` — never construct raw URL strings in repositories
-- Use `RetryingNetworkService` in production builds (wraps the real `NetworkService`)
-- Tests inject `MockNetworkService` directly — never wrap mocks with retry logic
-- All network errors must be typed (`NetworkError` enum) — never throw `NSError` or raw strings
+- New endpoints are added to the central endpoint catalog — never construct raw URL strings inline
+- Cross-cutting concerns (retry, auth headers, logging) belong in a decorator/wrapper around the
+  networking abstraction, not in repositories or ViewModels — adopt them only when the project needs
+  them, and record the approach in `project-profile.md`
+- Tests inject a mock conforming to the networking protocol directly — never wrap mocks with
+  production decorators (retry, caching, etc.)
+- All network errors must be typed (a dedicated `Error` enum) — never throw `NSError` or raw strings
+
+> **N/A for structured local persistence in this project** — see `docs/project-profile.md`.
+> Domain data is remote-only; widget sharing uses `AppGroupStore` outside the repository layer.
+> For projects that need local storage, persistence (SwiftData / Core Data / Keychain / UserDefaults)
+> lives behind the same repository protocols. See the *Persistence Layer* section in
+> `docs/advanced-topics.md`.
 
 ## Core Layer
 
 ### Dependency Injection
 
-`DIContainer` is the single wiring point. It is created once at app startup and injected via `@EnvironmentObject`.
+Dependencies are wired in a **single composition root**, created once at app startup. The
+*mechanism* is the project's choice (recorded in `docs/project-profile.md`): a hand-written
+container, SwiftUI's `@Environment`, or a DI library. Whatever the mechanism, the principles are
+the same — **constructor injection** of protocols, no service locators buried inside types, and no
+global singletons outside the composition root.
+
+The example below shows one common shape (a hand-written container exposing factory methods):
 
 ```swift
-final class DIContainer: ObservableObject {
+// Example composition root — the role is "single place where concrete dependencies are wired"
+final class DIContainer {
     let networkService: NetworkServiceProtocol
-    let imageCacheManager: ImageCacheManagerProtocol
-    let characterRepository: CharacterRepositoryProtocol
+    let <entity>Repository: <Entity>RepositoryProtocol
     // ...
 
     // ViewModel factories — return new instances so each screen owns its state
-    func makeCharactersListViewModel() -> CharactersListViewModel {
-        CharactersListViewModel(
-            getCharactersUseCase: GetCharactersUseCase(repository: characterRepository)
+    func make<Feature>ListViewModel() -> <Feature>ListViewModel {
+        <Feature>ListViewModel(
+            get<Entity>ListUseCase: Get<Entity>ListUseCase(repository: <entity>Repository)
         )
     }
 }
 ```
 
 Rules:
-- Repositories are shared (stateless, safe to reuse across ViewModels)
-- ViewModels are created via factory methods — never shared
-- Tests instantiate `DIContainer` with mock services, or construct ViewModels directly with mocks
-- Never use singletons or global state outside `DIContainer`
+- Inject dependencies through initializers as **protocols** — never instantiate concrete
+  collaborators inside a type
+- Repositories are typically shared (stateless, safe to reuse); ViewModels are created per screen
+- Tests build the unit under test with mocks directly (or instantiate the composition root with
+  mock services)
+- No singletons or global mutable state outside the composition root
 
 ### Image Caching
 
-Image caching is centralized in `ImageCacheManager`. Views use `CachedAsyncImageView` — never use `AsyncImage` directly.
+> Applies only when the app loads remote images. Skip this role entirely for asset-only UIs.
 
-### Widget Shared Storage (App Group)
-
-`AppGroupStore` (`Core/Storage/AppGroupStore.swift`) is the single point of access for sharing data between the main app and the WidgetKit extension via an App Group container.
-
-App Group identifier: `group.com.fvg0902iosdev.RickMortyChallenge.widget`
-
-**Responsibilities:**
-- Write/read a `[CharacterWidgetData]` snapshot to `UserDefaults(suiteName:)` under key `widget.characters`
-- Persist the current widget navigation index under key `widget.currentIndex`
-- Download and cache character images to the shared App Group `FileManager` container (`Library/Caches/widget-images/<id>.jpg`) so the widget can load them synchronously
-
-**Pattern:**
-- `CharactersListViewModel` calls `store.writeSnapshot(_:)` synchronously after `ViewState.success`, passing `Array(allCharacters.shuffled().prefix(20))` mapped to `CharacterWidgetData`
-- Image download runs in a `Task.detached(priority: .background)` after the snapshot write — it does not block the UI
-- `AppGroupStoreProtocol` allows mock injection in tests; inject `nil` to disable widget writes in test scenarios
-
-**Key rule:** `AppGroupStore` is always injected via `DIContainer`. Never instantiate `AppGroupStore()` directly in ViewModels.
+Remote image loading and caching are centralized behind a **single reusable component** (role:
+an image cache + a caching image view) so views never re-implement download/cache logic. The
+concrete type names and whether this role exists at all are recorded in `docs/project-profile.md`.
 
 ## Coding Standards
 
@@ -351,12 +407,12 @@ App Group identifier: `group.com.fvg0902iosdev.RickMortyChallenge.widget`
 
 | Construct | Convention | Example |
 |---|---|---|
-| Types (class, struct, enum, protocol) | PascalCase | `CharacterEntity`, `NetworkError` |
-| Properties and functions | camelCase | `fetchCharacters`, `hasNextPage` |
-| Protocol names | Noun or `[Type]Protocol` | `CharacterRepositoryProtocol` |
-| Enum cases | camelCase | `.alive`, `.noInternetConnection` |
+| Types (class, struct, enum, protocol) | PascalCase | `<Entity>Entity`, `NetworkError` |
+| Properties and functions | camelCase | `fetch<Entity>List`, `hasNextPage` |
+| Protocol names | Noun or `[Type]Protocol` | `<Entity>RepositoryProtocol` |
+| Enum cases | camelCase | `.active`, `.noInternetConnection` |
 | Constants | camelCase (let) | `let baseURL = ...` |
-| Test subjects | `sut` | `var sut: CharactersListViewModel!` |
+| Test subjects | `sut` | `var sut: <Feature>ListViewModel!` |
 
 ### Swift Usage
 
@@ -378,8 +434,8 @@ App Group identifier: `group.com.fvg0902iosdev.RickMortyChallenge.widget`
 ```swift
 // Good
 @MainActor
-final class CharactersListViewModel: ObservableObject {
-    @Published private(set) var viewState: ViewState<[CharacterEntity]> = .idle
+final class <Feature>ListViewModel: ObservableObject {
+    @Published private(set) var viewState: ViewState<[<Entity>Entity]> = .idle
 
     func loadInitial() async {
         // runs on @MainActor automatically
@@ -389,6 +445,11 @@ final class CharactersListViewModel: ObservableObject {
 // Avoid: manual dispatch
 DispatchQueue.main.async { self.viewState = .success(items) }
 ```
+
+> For new projects, target the **Swift 6 language mode** (or *Strict Concurrency = Complete*) so
+> data races become compile-time errors. Guidance on `Sendable`, actor isolation, `@preconcurrency`,
+> and typed throws (`throws(SpecificError)`) is in the *Swift 6 & Strict Concurrency* section of
+> `docs/advanced-topics.md`.
 
 ### Error Handling
 
@@ -410,19 +471,57 @@ enum NetworkError: Error, LocalizedError {
 
 ### Unit Tests
 
-All Domain and Data layer code must have unit tests. Test files live in `RickMortyChallengeTests/` mirroring the source structure.
+All Domain and Data layer code must have unit tests. Test files live in `<AppName>Tests/` mirroring the source structure.
+
+Two frameworks are acceptable — pick one per target and stay consistent:
+
+- **Swift Testing** (`@Test`, `#expect`, `@Suite`) — preferred for new projects on recent toolchains;
+  concise, parameterized tests, native `async`/`Sendable` support
+- **XCTest** (`XCTestCase`) — for compatibility with older toolchains, UI tests (XCUITest), or
+  existing suites
+
+**Swift Testing example:**
+
+```swift
+import Testing
+
+@MainActor
+struct <Feature>ListViewModelTests {
+    @Test
+    func loadInitial_withSuccessfulResponse_setsSuccessState() async {
+        let mockRepository = Mock<Entity>Repository()
+        let items = MockDataFactory.make<Entity>Entities(count: 3)
+        mockRepository.fetch<Entity>ListResult = .success(
+            MockDataFactory.makePagedResult(items: items)
+        )
+        let sut = <Feature>ListViewModel(
+            get<Entity>ListUseCase: Get<Entity>ListUseCase(repository: mockRepository)
+        )
+
+        await sut.loadInitial()
+
+        guard case .success(let loaded) = sut.viewState else {
+            Issue.record("Expected .success, got \(sut.viewState)")
+            return
+        }
+        #expect(loaded.count == 3)
+    }
+}
+```
+
+**XCTest example:**
 
 ```swift
 @MainActor
-final class CharactersListViewModelTests: XCTestCase {
-    var sut: CharactersListViewModel!
-    var mockRepository: MockCharacterRepository!
+final class <Feature>ListViewModelTests: XCTestCase {
+    var sut: <Feature>ListViewModel!
+    var mockRepository: Mock<Entity>Repository!
 
     override func setUp() {
         super.setUp()
-        mockRepository = MockCharacterRepository()
-        sut = CharactersListViewModel(
-            getCharactersUseCase: GetCharactersUseCase(repository: mockRepository)
+        mockRepository = Mock<Entity>Repository()
+        sut = <Feature>ListViewModel(
+            get<Entity>ListUseCase: Get<Entity>ListUseCase(repository: mockRepository)
         )
     }
 
@@ -434,9 +533,9 @@ final class CharactersListViewModelTests: XCTestCase {
 
     func testLoadInitial_withSuccessfulResponse_setsSuccessState() async {
         // Arrange
-        let characters = MockDataFactory.makeCharacterEntities(count: 3)
-        mockRepository.fetchCharactersResult = .success(
-            MockDataFactory.makePagedResult(items: characters)
+        let items = MockDataFactory.make<Entity>Entities(count: 3)
+        mockRepository.fetch<Entity>ListResult = .success(
+            MockDataFactory.makePagedResult(items: items)
         )
 
         // Act
@@ -454,23 +553,23 @@ final class CharactersListViewModelTests: XCTestCase {
 
 ### Mocks
 
-- Mocks live in `RickMortyChallengeTests/Mocks/`
+- Mocks live in `<AppName>Tests/Mocks/`
 - Each repository protocol has a corresponding `Mock[Name]Repository`
 - Mocks expose `Result`-typed properties to configure success/failure per test
 - Mocks track call counts and last parameters to verify interaction
 
 ```swift
-final class MockCharacterRepository: CharacterRepositoryProtocol {
-    var fetchCharactersResult: Result<PagedResult<CharacterEntity>, Error> = .success(
+final class Mock<Entity>Repository: <Entity>RepositoryProtocol {
+    var fetch<Entity>ListResult: Result<PagedResult<<Entity>Entity>, Error> = .success(
         MockDataFactory.makePagedResult(items: [])
     )
-    var fetchCharactersCallCount = 0
+    var fetch<Entity>ListCallCount = 0
     var lastFetchPage: Int?
 
-    func fetchCharacters(page: Int, name: String?) async throws -> PagedResult<CharacterEntity> {
-        fetchCharactersCallCount += 1
+    func fetch<Entity>List(page: Int, name: String?) async throws -> PagedResult<<Entity>Entity> {
+        fetch<Entity>ListCallCount += 1
         lastFetchPage = page
-        return try fetchCharactersResult.get()
+        return try fetch<Entity>ListResult.get()
     }
 }
 ```
@@ -501,14 +600,26 @@ Group with `// MARK: - [method name]` sections within each test class.
 
 ## Performance Best Practices
 
-- **Pagination**: always use `PagedResult` and load pages on demand — never fetch all items at once
-- **Image caching**: use `ImageCacheManager` with disk + memory cache — never re-download cached images
-- **Retry logic**: `RetryingNetworkService` handles transient failures automatically — do not add retry loops in ViewModels
+- **Pagination**: for paginated or large collections, load pages on demand behind a paginated
+  result type — never fetch all items at once *(skip when the dataset is small or unpaginated)*
+- **Image caching**: when loading remote images, go through the shared caching component (memory +
+  disk) — never re-download cached images *(skip for asset-only UIs)*
+- **Retry logic**: when transient failures matter, handle them in the networking decorator — do not
+  add retry loops in ViewModels *(skip when not needed)*
 - **Task cancellation**: store `Task` references in ViewModels and cancel on `deinit` or `onDisappear` to avoid stale updates
 
 ## Security Best Practices
 
-- **No hardcoded secrets**: API base URLs in `APIEndpoint`, never inline
+- **No hardcoded secrets**: base URLs and configuration live in the endpoint catalog or a config layer, never inlined ad hoc; secrets never ship in source
 - **HTTPS only**: all network requests must use HTTPS — `App Transport Security` is not disabled
 - **No sensitive data in logs**: never log user data, tokens, or full response bodies
-- **Input sanitization**: validate and encode user-provided search strings before appending to URLs (already handled by `APIEndpoint` URL construction)
+- **Input sanitization**: validate and encode user-provided values before appending to URLs — centralize this in the endpoint catalog so it is applied consistently
+
+## Related: Advanced & Optional Topics
+
+The following optional topics are documented separately in `docs/advanced-topics.md`. Apply them
+only when the project needs them:
+
+- **Modularization Variant (SPM)** — splitting layers/features into Swift packages for large apps
+- **Persistence Layer** — SwiftData / Core Data / Keychain / UserDefaults behind repositories
+- **Swift 6 & Strict Concurrency** — language mode, `Sendable`, actor isolation, typed throws
