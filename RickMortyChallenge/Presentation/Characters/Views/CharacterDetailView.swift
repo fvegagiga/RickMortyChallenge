@@ -82,24 +82,25 @@ struct CharacterDetailContentBodyView: View {
         }
         .frame(height: 340)
         .clipped()
-        .overlay(alignment: .bottomLeading) {
-            VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                StatusBadgeView(status: character.status)
-                Text(character.name)
-                    .font(.DS.largeTitle)
-                    .foregroundStyle(.white)
-                    .shadow(radius: 4)
-            }
-            .padding(DSSpacing.md)
-            .background(
+        .overlay(alignment: .bottom) {
+            ZStack(alignment: .bottomLeading) {
                 LinearGradient(
                     colors: [.black.opacity(0.7), .clear],
                     startPoint: .bottom,
                     endPoint: .top
                 )
-                .frame(height: 160),
-                alignment: .bottom
-            )
+                .frame(maxWidth: .infinity)
+                .frame(height: 160, alignment: .bottom)
+
+                VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                    StatusBadgeView(status: character.status)
+                    Text(character.name)
+                        .font(.DS.largeTitle)
+                        .foregroundStyle(.white)
+                        .shadow(radius: 4)
+                }
+                .padding(DSSpacing.md)
+            }
         }
     }
 
