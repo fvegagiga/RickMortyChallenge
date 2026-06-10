@@ -4,6 +4,8 @@
 # Xcode
 DerivedData/
 build/
+TestResults.xcresult/
+*.xcresult/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
