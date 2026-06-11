@@ -117,12 +117,20 @@ final class <Entity>RepositoryImpl: <Entity>RepositoryProtocol {
 
 ## Swift 6 & Strict Concurrency
 
-> **N/A for this project (current state)** — see `docs/project-profile.md`. The app uses Swift 5.0
-> with `SWIFT_STRICT_CONCURRENCY = targeted`. The guidance below is retained as a migration
-> reference when raising the deployment target or adopting Swift 6.
+> **Partially applied (targeted checking)** — see `docs/project-profile.md`. The app uses Swift 5.0
+> with `SWIFT_STRICT_CONCURRENCY = targeted`. Core shared mutable infrastructure already uses
+> `actor` isolation (`ImageCacheManager`, `AppGroupStore`); ViewModels use `@MainActor` and
+> structured `Task { @concurrent in }` for background side effects. Full Swift 6 / Complete
+> checking is not enabled yet.
+
+**Applied in this codebase (Swift 5 targeted):**
+
+- `actor ImageCacheManager` with async `ImageCacheManagerProtocol` — serializes memory/disk cache access
+- `actor AppGroupStore` with async writes/downloads and `nonisolated` widget read helpers backed by `UserDefaults`
+- `CharactersListViewModel` — debounce sleep off main actor; widget image downloads via structured concurrent tasks (no `Task.detached`)
 
 <details>
-<summary>Reference: Swift 6 strict concurrency (not adopted yet)</summary>
+<summary>Reference: Swift 6 strict concurrency (not fully adopted yet)</summary>
 
 > Use when: starting a new project or migrating an existing one to safer concurrency. Recommended
 > as the default for all new work.

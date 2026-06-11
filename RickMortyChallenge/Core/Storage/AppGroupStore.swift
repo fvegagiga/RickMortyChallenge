@@ -1,16 +1,16 @@
 import Foundation
 
 protocol AppGroupStoreProtocol: Sendable {
-    func writeSnapshot(_ characters: [CharacterWidgetData])
+    func writeSnapshot(_ characters: [CharacterWidgetData]) async
     func downloadImages(for characters: [CharacterWidgetData]) async
-    func currentCharacter() -> CharacterWidgetData?
-    func currentIndex() -> Int
-    func setCurrentIndex(_ index: Int)
-    func totalCount() -> Int
-    func imageURL(for characterId: Int) -> URL?
+    nonisolated func currentCharacter() -> CharacterWidgetData?
+    nonisolated func currentIndex() -> Int
+    nonisolated func setCurrentIndex(_ index: Int)
+    nonisolated func totalCount() -> Int
+    nonisolated func imageURL(for characterId: Int) -> URL?
 }
 
-final class AppGroupStore: AppGroupStoreProtocol {
+actor AppGroupStore: AppGroupStoreProtocol {
 
     static let appGroupIdentifier = "group.com.fvg0902iosdev.RickMortyChallenge.widget"
 
@@ -19,8 +19,8 @@ final class AppGroupStore: AppGroupStoreProtocol {
         static let currentIndex = "widget.currentIndex"
     }
 
-    private let defaults: UserDefaults?
-    private let urlSession: URLSession
+    nonisolated private let defaults: UserDefaults?
+    nonisolated private let urlSession: URLSession
 
     init(
         defaults: UserDefaults? = UserDefaults(suiteName: AppGroupStore.appGroupIdentifier),
@@ -32,34 +32,34 @@ final class AppGroupStore: AppGroupStoreProtocol {
 
     // MARK: - Snapshot
 
-    func writeSnapshot(_ characters: [CharacterWidgetData]) {
+    func writeSnapshot(_ characters: [CharacterWidgetData]) async {
         guard let encoded = try? JSONEncoder().encode(characters) else { return }
         defaults?.set(encoded, forKey: Keys.characters)
         defaults?.set(0, forKey: Keys.currentIndex)
     }
 
-    func currentCharacter() -> CharacterWidgetData? {
+    nonisolated func currentCharacter() -> CharacterWidgetData? {
         let all = loadAll()
         guard !all.isEmpty else { return nil }
         let index = min(currentIndex(), all.count - 1)
         return all[index]
     }
 
-    func currentIndex() -> Int {
+    nonisolated func currentIndex() -> Int {
         defaults?.integer(forKey: Keys.currentIndex) ?? 0
     }
 
-    func setCurrentIndex(_ index: Int) {
+    nonisolated func setCurrentIndex(_ index: Int) {
         defaults?.set(index, forKey: Keys.currentIndex)
     }
 
-    func totalCount() -> Int {
+    nonisolated func totalCount() -> Int {
         loadAll().count
     }
 
     // MARK: - Image Storage
 
-    func imageURL(for characterId: Int) -> URL? {
+    nonisolated func imageURL(for characterId: Int) -> URL? {
         guard defaults != nil else { return nil }
         return imageContainerURL()?.appendingPathComponent("\(characterId).jpg")
     }
@@ -70,8 +70,8 @@ final class AppGroupStore: AppGroupStoreProtocol {
 
         await withTaskGroup(of: Void.self) { group in
             for character in characters {
-                group.addTask { [weak self] in
-                    await self?.downloadImageIfNeeded(character)
+                group.addTask { [urlSession] in
+                    await self.downloadImageIfNeeded(character, urlSession: urlSession)
                 }
             }
         }
@@ -79,7 +79,7 @@ final class AppGroupStore: AppGroupStoreProtocol {
 
     // MARK: - Private
 
-    private func loadAll() -> [CharacterWidgetData] {
+    nonisolated private func loadAll() -> [CharacterWidgetData] {
         guard
             let data = defaults?.data(forKey: Keys.characters),
             let characters = try? JSONDecoder().decode([CharacterWidgetData].self, from: data)
@@ -87,13 +87,13 @@ final class AppGroupStore: AppGroupStoreProtocol {
         return characters
     }
 
-    private func imageContainerURL() -> URL? {
+    nonisolated private func imageContainerURL() -> URL? {
         FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: AppGroupStore.appGroupIdentifier)?
             .appendingPathComponent("Library/Caches/widget-images", isDirectory: true)
     }
 
-    private func downloadImageIfNeeded(_ character: CharacterWidgetData) async {
+    private func downloadImageIfNeeded(_ character: CharacterWidgetData, urlSession: URLSession) async {
         guard
             let source = character.imageURL,
             let destination = imageURL(for: character.id),

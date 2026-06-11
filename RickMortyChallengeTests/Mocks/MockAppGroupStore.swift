@@ -1,7 +1,7 @@
 import Foundation
 @testable import RickMortyChallenge
 
-final class MockAppGroupStore: AppGroupStoreProtocol {
+final class MockAppGroupStore: AppGroupStoreProtocol, @unchecked Sendable {
     var writtenSnapshot: [CharacterWidgetData]?
     var writeSnapshotCallCount = 0
     var downloadImagesCallCount = 0
@@ -9,7 +9,7 @@ final class MockAppGroupStore: AppGroupStoreProtocol {
     var stubbedCurrentIndex = 0
     var stubbedTotalCount = 0
 
-    func writeSnapshot(_ characters: [CharacterWidgetData]) {
+    func writeSnapshot(_ characters: [CharacterWidgetData]) async {
         writtenSnapshot = characters
         writeSnapshotCallCount += 1
     }

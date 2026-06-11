@@ -1,24 +1,28 @@
 import UIKit
 
-protocol ImageCacheManagerProtocol {
-    func image(for url: URL) -> UIImage?
-    func store(_ image: UIImage, for url: URL)
-    func clearCache()
+protocol ImageCacheManagerProtocol: Sendable {
+    func image(for url: URL) async -> UIImage?
+    func store(_ image: UIImage, for url: URL) async
+    func clearCache() async
 }
 
-final class ImageCacheManager: ImageCacheManagerProtocol {
+actor ImageCacheManager: ImageCacheManagerProtocol {
     private let memoryCache = NSCache<NSString, UIImage>()
     private let cacheDirectory: URL
+    private let fileManager: FileManager
 
-    init() {
-        let baseDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        cacheDirectory = baseDir.appendingPathComponent("com.rickmorty.imagecache", isDirectory: true)
-        try? FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
+    init(cacheDirectory: URL? = nil, fileManager: FileManager = .default) {
+        self.fileManager = fileManager
+        let baseDirectory = cacheDirectory
+            ?? fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+                .appendingPathComponent("com.rickmorty.imagecache", isDirectory: true)
+        self.cacheDirectory = baseDirectory
+        try? fileManager.createDirectory(at: baseDirectory, withIntermediateDirectories: true)
         memoryCache.countLimit = 150
         memoryCache.totalCostLimit = 75 * 1_024 * 1_024
     }
 
-    func image(for url: URL) -> UIImage? {
+    func image(for url: URL) async -> UIImage? {
         let key = cacheKey(for: url)
 
         if let cached = memoryCache.object(forKey: key as NSString) {
@@ -35,20 +39,24 @@ final class ImageCacheManager: ImageCacheManagerProtocol {
         return image
     }
 
-    func store(_ image: UIImage, for url: URL) {
+    func store(_ image: UIImage, for url: URL) async {
         let key = cacheKey(for: url)
         memoryCache.setObject(image, forKey: key as NSString)
 
         let filePath = cacheDirectory.appendingPathComponent(key)
-        Task(priority: .background) {
-            image.jpegData(compressionQuality: 0.85).map { try? $0.write(to: filePath) }
+        if let data = image.jpegData(compressionQuality: 0.85) {
+            try? data.write(to: filePath)
         }
     }
 
-    func clearCache() {
+    func clearCache() async {
         memoryCache.removeAllObjects()
-        try? FileManager.default.removeItem(at: cacheDirectory)
-        try? FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
+        try? fileManager.removeItem(at: cacheDirectory)
+        try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
+    }
+
+    func clearMemoryCacheForTesting() {
+        memoryCache.removeAllObjects()
     }
 
     private func cacheKey(for url: URL) -> String {

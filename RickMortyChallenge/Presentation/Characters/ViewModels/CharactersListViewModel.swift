@@ -47,7 +47,7 @@ final class CharactersListViewModel: ObservableObject {
 
     func onSearchTextChanged() {
         searchDebounceTask?.cancel()
-        searchDebounceTask = Task {
+        searchDebounceTask = Task { @concurrent in
             try? await Task.sleep(nanoseconds: 500_000_000)
             guard !Task.isCancelled else { return }
             await performSearch()
@@ -74,7 +74,7 @@ final class CharactersListViewModel: ObservableObject {
             hasNextPage = result.hasNextPage
 
             viewState = allCharacters.isEmpty ? .empty : .success(allCharacters)
-            writeWidgetSnapshot()
+            await writeWidgetSnapshot()
         } catch {
             if allCharacters.isEmpty {
                 viewState = .failure(error)
@@ -82,13 +82,13 @@ final class CharactersListViewModel: ObservableObject {
         }
     }
 
-    private func writeWidgetSnapshot() {
+    private func writeWidgetSnapshot() async {
         guard let store = appGroupStore else { return }
         let snapshot = Array(allCharacters.shuffled().prefix(20)).map {
             CharacterWidgetData(id: $0.id, name: $0.name, imageFileName: "\($0.id).jpg", imageURL: $0.imageURL, status: $0.status.rawValue)
         }
-        store.writeSnapshot(snapshot)
-        Task.detached(priority: .background) {
+        await store.writeSnapshot(snapshot)
+        Task { @concurrent in
             await store.downloadImages(for: snapshot)
         }
     }
