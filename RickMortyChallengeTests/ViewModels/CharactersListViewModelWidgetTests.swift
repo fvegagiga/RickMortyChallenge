@@ -27,6 +27,8 @@ struct CharactersListViewModelWidgetTests {
         await sut.loadInitial()
 
         #expect(mockStore.writeSnapshotCallCount == 1)
+        await waitForDownloadImages(on: mockStore)
+        #expect(mockStore.downloadImagesCallCount == 1)
     }
 
     @Test
@@ -98,5 +100,15 @@ struct CharactersListViewModelWidgetTests {
         )
 
         await sutWithoutStore.loadInitial()
+    }
+
+    private func waitForDownloadImages(on store: MockAppGroupStore, timeoutNanoseconds: UInt64 = 2_000_000_000) async {
+        let step: UInt64 = 50_000_000
+        var elapsed: UInt64 = 0
+        while store.downloadImagesCallCount < 1, elapsed < timeoutNanoseconds {
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: step)
+            elapsed += step
+        }
     }
 }

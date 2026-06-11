@@ -70,20 +70,26 @@ struct ImageCacheManagerTests {
     func parallelStoreAndRead_completesWithoutCrash() async {
         let sut = makeSUT()
         let urls = (0..<20).map { URL(string: "https://example.com/parallel-\($0).jpg")! }
+        let expectedSizes = urls.enumerated().map { index, _ in
+            CGSize(width: 10 + index, height: 10 + index)
+        }
 
         await withTaskGroup(of: Void.self) { group in
             for (index, url) in urls.enumerated() {
                 group.addTask {
-                    let image = self.makeImage(color: index.isMultiple(of: 2) ? .red : .blue)
+                    let image = self.makeImage(
+                        color: index.isMultiple(of: 2) ? .red : .blue,
+                        size: expectedSizes[index]
+                    )
                     await sut.store(image, for: url)
                     _ = await sut.image(for: url)
                 }
             }
         }
 
-        for url in urls {
+        for (index, url) in urls.enumerated() {
             let image = await sut.image(for: url)
-            #expect(image != nil)
+            #expect(image?.size == expectedSizes[index])
         }
     }
 }
