@@ -126,7 +126,7 @@ final class <Entity>RepositoryImpl: <Entity>RepositoryProtocol {
 **Applied in this codebase (Swift 5 targeted):**
 
 - `actor ImageCacheManager` with async `ImageCacheManagerProtocol` — serializes memory/disk cache access
-- `actor AppGroupStore` with async writes/downloads and `nonisolated` widget read helpers backed by `UserDefaults`
+- `actor AppGroupStore` with async writes/downloads and `nonisolated` widget read helpers backed by `UserDefaults` — see `openspec/specs/thread-safe-app-group-store/spec.md` for the two-key invariant and isolation boundaries
 - `CharactersListViewModel` — debounce sleep off main actor; widget image downloads via structured concurrent tasks (no `Task.detached`)
 
 <details>

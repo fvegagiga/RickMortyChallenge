@@ -14,6 +14,10 @@ actor AppGroupStore: AppGroupStoreProtocol {
 
     static let appGroupIdentifier = "group.com.fvg0902iosdev.RickMortyChallenge.widget"
 
+    /// Widget snapshot state uses two UserDefaults keys: `widget.characters` (JSON snapshot)
+    /// and `widget.currentIndex`. `writeSnapshot` resets the index when updating characters.
+    /// Cross-key atomicity is best-effort via write ordering, not transactional.
+    /// Widget-facing reads remain `nonisolated` because WidgetKit requires synchronous access.
     private enum Keys {
         static let characters = "widget.characters"
         static let currentIndex = "widget.currentIndex"
@@ -21,13 +25,16 @@ actor AppGroupStore: AppGroupStoreProtocol {
 
     nonisolated private let defaults: UserDefaults?
     nonisolated private let urlSession: URLSession
+    nonisolated private let imageCacheDirectoryOverride: URL?
 
     init(
         defaults: UserDefaults? = UserDefaults(suiteName: AppGroupStore.appGroupIdentifier),
-        urlSession: URLSession = .shared
+        urlSession: URLSession = .shared,
+        imageCacheDirectory: URL? = nil
     ) {
         self.defaults = defaults
         self.urlSession = urlSession
+        self.imageCacheDirectoryOverride = imageCacheDirectory
     }
 
     // MARK: - Snapshot
@@ -88,7 +95,10 @@ actor AppGroupStore: AppGroupStoreProtocol {
     }
 
     nonisolated private func imageContainerURL() -> URL? {
-        FileManager.default
+        if let imageCacheDirectoryOverride {
+            return imageCacheDirectoryOverride
+        }
+        return FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: AppGroupStore.appGroupIdentifier)?
             .appendingPathComponent("Library/Caches/widget-images", isDirectory: true)
     }
