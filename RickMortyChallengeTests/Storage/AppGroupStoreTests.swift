@@ -13,23 +13,23 @@ struct AppGroupStoreTests {
     }
 
     @Test
-    func writeSnapshot_persistsCharacters() {
+    func writeSnapshot_persistsCharacters() async {
         let characters = makeCharacters(count: 3)
-        sut.writeSnapshot(characters)
+        await sut.writeSnapshot(characters)
         #expect(sut.totalCount() == 3)
     }
 
     @Test
-    func writeSnapshot_resetsIndexToZero() {
+    func writeSnapshot_resetsIndexToZero() async {
         sut.setCurrentIndex(5)
-        sut.writeSnapshot(makeCharacters(count: 3))
+        await sut.writeSnapshot(makeCharacters(count: 3))
         #expect(sut.currentIndex() == 0)
     }
 
     @Test
-    func writeSnapshot_overwritesPreviousSnapshot() {
-        sut.writeSnapshot(makeCharacters(count: 5))
-        sut.writeSnapshot(makeCharacters(count: 2))
+    func writeSnapshot_overwritesPreviousSnapshot() async {
+        await sut.writeSnapshot(makeCharacters(count: 5))
+        await sut.writeSnapshot(makeCharacters(count: 2))
         #expect(sut.totalCount() == 2)
     }
 
@@ -39,23 +39,23 @@ struct AppGroupStoreTests {
     }
 
     @Test
-    func currentCharacter_returnsFirstByDefault() {
+    func currentCharacter_returnsFirstByDefault() async {
         let characters = makeCharacters(count: 3)
-        sut.writeSnapshot(characters)
+        await sut.writeSnapshot(characters)
         #expect(sut.currentCharacter()?.id == characters[0].id)
     }
 
     @Test
-    func currentCharacter_respectsCurrentIndex() {
+    func currentCharacter_respectsCurrentIndex() async {
         let characters = makeCharacters(count: 3)
-        sut.writeSnapshot(characters)
+        await sut.writeSnapshot(characters)
         sut.setCurrentIndex(2)
         #expect(sut.currentCharacter()?.id == characters[2].id)
     }
 
     @Test
-    func setCurrentIndex_persistsValue() {
-        sut.writeSnapshot(makeCharacters(count: 5))
+    func setCurrentIndex_persistsValue() async {
+        await sut.writeSnapshot(makeCharacters(count: 5))
         sut.setCurrentIndex(3)
         #expect(sut.currentIndex() == 3)
     }
@@ -71,8 +71,8 @@ struct AppGroupStoreTests {
     }
 
     @Test
-    func totalCount_matchesWrittenSnapshot() {
-        sut.writeSnapshot(makeCharacters(count: 7))
+    func totalCount_matchesWrittenSnapshot() async {
+        await sut.writeSnapshot(makeCharacters(count: 7))
         #expect(sut.totalCount() == 7)
     }
 

@@ -38,7 +38,7 @@ struct CachedAsyncImageView<Content: View, Placeholder: View>: View {
     private func loadImage() async {
         guard let url else { return }
 
-        if let cached = cacheManager.image(for: url) {
+        if let cached = await cacheManager.image(for: url) {
             uiImage = cached
             return
         }
@@ -47,7 +47,7 @@ struct CachedAsyncImageView<Content: View, Placeholder: View>: View {
               let downloaded = UIImage(data: data)
         else { return }
 
-        cacheManager.store(downloaded, for: url)
+        await cacheManager.store(downloaded, for: url)
         uiImage = downloaded
     }
 }

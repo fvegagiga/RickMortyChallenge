@@ -63,8 +63,8 @@ ambiguous:
 | Endpoint catalog | `APIEndpoint` enum conforming to `Endpoint` | Typed `APIEndpoint` enum | Decided |
 | Networking decorators (retry/auth/logging) | `RetryingNetworkService` wrapping `NetworkService` in `DIContainer` | Add only when needed | Decided |
 | Pagination | `PagedResult<T>` for characters, locations, and episodes | `PagedResult<T>` when endpoints paginate | Decided |
-| Remote image caching | `CachedAsyncImageView` + `ImageCacheManager` / `ImageCacheManagerProtocol` | A cached image view + image cache, when loading remote images | Decided |
-| Local persistence | `AppGroupStore` (`UserDefaults` app group + `FileManager` widget image cache) — widget extension data sharing only; no SwiftData/Core Data/Keychain | None unless required (SwiftData for iOS 17+, Keychain for secrets) | Decided (minimal) |
+| Remote image caching | `CachedAsyncImageView` + `actor ImageCacheManager` / async `ImageCacheManagerProtocol` | A cached image view + image cache, when loading remote images | Decided |
+| Local persistence | `actor AppGroupStore` (`UserDefaults` app group + `FileManager` widget image cache) — widget extension data sharing only; no SwiftData/Core Data/Keychain | None unless required (SwiftData for iOS 17+, Keychain for secrets) | Decided (minimal) |
 
 ## 4. Testing
 
@@ -118,4 +118,6 @@ corresponding generic-standard sections are deliberately skipped.
 - **SwiftData / Core Data** — no structured local model persistence
 - **Keychain** — no secrets/tokens stored locally
 - **Swift 6 language mode / Strict Concurrency = Complete** — project uses Swift 5.0 with targeted
-  concurrency checking; revisit when raising deployment target or migrating dependencies
+  concurrency checking; Core infrastructure (`ImageCacheManager`, `AppGroupStore`) uses `actor`
+  isolation under targeted checking; revisit Complete/Swift 6 when raising deployment target or
+  migrating dependencies
