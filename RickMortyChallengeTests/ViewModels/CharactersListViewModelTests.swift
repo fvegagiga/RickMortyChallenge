@@ -159,6 +159,16 @@ struct CharactersListViewModelTests {
         #expect(mockRepository.fetchCharactersCallCount == callCountAfterInitial)
     }
 
+    private func waitForFetchCount(_ expected: Int, timeoutNanoseconds: UInt64 = 2_000_000_000) async {
+        let step: UInt64 = 50_000_000
+        var elapsed: UInt64 = 0
+        while mockRepository.fetchCharactersCallCount < expected, elapsed < timeoutNanoseconds {
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: step)
+            elapsed += step
+        }
+    }
+
     @Test
     func onSearchTextChanged_triggersSearchAfterDebounce() async {
         mockRepository.fetchCharactersResult = .success(
@@ -174,7 +184,7 @@ struct CharactersListViewModelTests {
         sut.searchText = "Rick"
         sut.onSearchTextChanged()
 
-        try? await Task.sleep(nanoseconds: 600_000_000)
+        await waitForFetchCount(2)
 
         #expect(mockRepository.fetchCharactersCallCount == 2)
         if case .success(let loaded) = sut.viewState {
