@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "ios-hig-design/SKILL.md",
       "computedHash": "5f761205c55c706b78d5df8b0c344c60beb922d9e26c0b445397e4046ab0b1ea"
+    },
+    "swift-concurrency": {
+      "source": "avdlee/swift-concurrency-agent-skill",
+      "sourceType": "github",
+      "skillPath": "swift-concurrency/SKILL.md",
+      "computedHash": "5e1f6433159038c49135028eeeea3a7b9a0a6001c8a4cc8227e391caf35cd985"
     }
   }
 }
