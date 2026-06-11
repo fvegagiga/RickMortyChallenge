@@ -55,9 +55,11 @@ actor ImageCacheManager: ImageCacheManagerProtocol {
         try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
     }
 
+    #if DEBUG
     func clearMemoryCacheForTesting() {
         memoryCache.removeAllObjects()
     }
+    #endif
 
     private func cacheKey(for url: URL) -> String {
         url.absoluteString

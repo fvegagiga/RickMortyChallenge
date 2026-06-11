@@ -140,4 +140,48 @@ struct CharactersListViewModelTests {
 
         #expect(mockRepository.fetchCharactersCallCount == callCountAfterInitial)
     }
+
+    @Test
+    func onSearchTextChanged_cancelsPriorDebounce() async {
+        mockRepository.fetchCharactersResult = .success(
+            MockDataFactory.makePagedResult(items: MockDataFactory.makeCharacterEntities(count: 3))
+        )
+        await sut.loadInitial()
+        let callCountAfterInitial = mockRepository.fetchCharactersCallCount
+
+        sut.searchText = "Rick"
+        sut.onSearchTextChanged()
+        sut.searchText = "Rick S"
+        sut.onSearchTextChanged()
+
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        #expect(mockRepository.fetchCharactersCallCount == callCountAfterInitial)
+    }
+
+    @Test
+    func onSearchTextChanged_triggersSearchAfterDebounce() async {
+        mockRepository.fetchCharactersResult = .success(
+            MockDataFactory.makePagedResult(items: MockDataFactory.makeCharacterEntities(count: 3))
+        )
+        await sut.loadInitial()
+
+        let searchResults = [MockDataFactory.makeCharacterEntity(id: 99, name: "Rick")]
+        mockRepository.fetchCharactersResult = .success(
+            MockDataFactory.makePagedResult(items: searchResults)
+        )
+
+        sut.searchText = "Rick"
+        sut.onSearchTextChanged()
+
+        try? await Task.sleep(nanoseconds: 600_000_000)
+
+        #expect(mockRepository.fetchCharactersCallCount == 2)
+        if case .success(let loaded) = sut.viewState {
+            #expect(loaded.count == 1)
+            #expect(loaded.first?.name == "Rick")
+        } else {
+            Issue.record("Expected .success after debounced search")
+        }
+    }
 }
