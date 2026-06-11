@@ -19,7 +19,9 @@ struct CharactersListView: View {
             contentView
                 .navigationTitle("Characters")
                 .searchable(text: $viewModel.searchText, prompt: "Search by name…")
-                .onChange(of: viewModel.searchText) { _ in viewModel.onSearchTextChanged() }
+                .onChange(of: viewModel.searchText) {
+                    viewModel.onSearchTextChanged()
+                }
                 .task { await viewModel.loadInitial() }
                 .refreshable { await viewModel.refresh() }
                 .navigationDestination(for: CharacterRoute.self) { route in
